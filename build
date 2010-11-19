@@ -1,0 +1,3 @@
+#!/bin/bash
+packager build Rubik/* > builds/rubik-latest.coffee
+coffee --print --no-wrap builds/rubik-latest.coffee > builds/rubik-latest.js

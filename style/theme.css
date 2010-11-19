@@ -1,0 +1,64 @@
+body {
+  font-family: Arial, Sans;
+  background-color: #aaaaaa;
+  margin: 0px;
+  overflow: hidden;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, 0.3))); }
+
+#shower-and-changer, .float {
+  -webkit-border-radius: 5px;
+  -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, 0.3)));
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #dddddd; }
+
+.menuitem {
+  width: 150px;
+  padding: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.8); }
+
+.menuitem:hover {
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.5); }
+
+#shower-and-changer {
+  display: none;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  padding: 10px; }
+  #shower-and-changer h1, #shower-and-changer h2 {
+    font-size: 18px;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    margin-bottom: 6px; }
+  #shower-and-changer h2 {
+    margin-top: 6px; }
+  #shower-and-changer li {
+    clear: both;
+    height: 16px; }
+  #shower-and-changer li:hover {
+    cursor: pointer; }
+  #shower-and-changer li:focus {
+    outline: none; }
+  #shower-and-changer .uks-keys, #shower-and-changer .uks-description {
+    float: left;
+    font-size: 12px; }
+  #shower-and-changer .uks-description {
+    width: 100px; }
+  #shower-and-changer .uks-keys {
+    width: 70px;
+    text-align: right;
+    font-weight: bold;
+    margin-right: 10px; }
+
+ul, ol {
+  list-style: none;
+  padding: 0;
+  margin: 0; }

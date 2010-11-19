@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>three.js - geometry - cube</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="style/theme.css"></style>
+  	<script type="text/javascript" src="vendor/Three.js"></script>
+    <script type="text/javascript" src="vendor/Cube.js"></script>
+    <script type="text/javascript" src="vendor/Plane.js"></script>
+    <script type="text/javascript" src="vendor/MooToolsCore.js"></script>
+    <script type="text/javascript" src="vendor/MooToolsMore.js"></script>
+    <script type="text/javascript" src="vendor/UserKeyboardShurtcuts.js"></script>
+    <script type="text/javascript" src="style/theme.js"></script>
+    <script type="text/javascript" src="vendor/gdotui-latest.js"></script>
+    <script type="text/javascript" src="builds/rubik-latest.js"></script>
+
+    <script>
+      window.addEvent('domready',function(){
+        Scene = new Rubik.Scene()
+        Rk = new Rubik.Rubik(Scene)
+        Rk.buildCube()
+        mm = new MainMenu()
+      });
+    </script>
+	</head>
+	<body>
+  </body>
+</html>
+

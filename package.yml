@@ -1,0 +1,9 @@
+name: Rubik
+author: gdotdesign
+sources:
+  - Source/Config.coffee
+  - Source/Fx.Three.coffee
+  - Source/Cube.coffee
+  - Source/Scene.coffee
+  - Source/Rubik.coffee
+  - Source/Frontend.coffee
