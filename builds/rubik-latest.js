@@ -1,9 +1,16 @@
-var CUBE_SIZE, MATERIAL, MATERIAL_BLACK, MainMenu, MenuItems, Rubik, STROKE_MATERIAL, STROKE_MATERIAL2, ShuffleID, Transitioning, TweenDuration, resetTransition;
+var CUBE_MATERIALS, CUBE_SIZE, MATERIAL, MATERIAL_BLACK, MainMenu, MenuItems, Rubik, STROKE_MATERIAL, STROKE_MATERIAL2, ShuffleID, Solving, Transitioning, TweenDuration, resetTransition;
 MATERIAL = new THREE.MeshFaceMaterial();
 STROKE_MATERIAL = new THREE.MeshColorStrokeMaterial(0x000000, 0.2, 2);
 STROKE_MATERIAL2 = new THREE.MeshColorStrokeMaterial(0x000000, 0.9, 5);
 MATERIAL_BLACK = new THREE.MeshColorFillMaterial(0x000000, 0.8);
 CUBE_SIZE = 300;
+CUBE_MATERIALS = [];
+CUBE_MATERIALS['white'] = new THREE.MeshColorFillMaterial(0xffffff, 1);
+CUBE_MATERIALS['red'] = new THREE.MeshColorFillMaterial(0xff0000, 1);
+CUBE_MATERIALS['orange'] = new THREE.MeshColorFillMaterial(0xFF6A00, 1);
+CUBE_MATERIALS['yellow'] = new THREE.MeshColorFillMaterial(0xffff00, 1);
+CUBE_MATERIALS['blue'] = new THREE.MeshColorFillMaterial(0x0000ff, 1);
+CUBE_MATERIALS['green'] = new THREE.MeshColorFillMaterial(0x00ff00, 1);
 TweenDuration = 250;
 Rubik = {};
 Fx.Three = new Class({
@@ -302,6 +309,22 @@ Rubik.Scene = new Class({
       active: true
     });
     this.keyboard.addShortcuts({
+      plusduration: {
+        keys: '+',
+        description: 'Increment rotation duration',
+        handler: function(e) {
+          e.stop();
+          return TweenDuration += 10;
+        }
+      },
+      minusduration: {
+        keys: '-',
+        description: 'decrement rotation duration',
+        handler: function(e) {
+          e.stop();
+          return TweenDuration -= 10;
+        }
+      },
       rotatey: {
         keys: 'shift+q',
         description: 'Rotate Y',
@@ -415,6 +438,14 @@ Rubik.Scene = new Class({
           } else {
             return (ShuffleID = setInterval(Scene.randomRotation, TweenDuration * 2));
           }
+        }
+      },
+      ground: {
+        keys: 'g',
+        description: 'Ground on / off',
+        handler: function(e) {
+          e.stop();
+          return Scene.scene.objects.indexOf(Scene.ground) >= 0 ? Scene.scene.removeObject(Scene.ground) : Scene.scene.addObject(Scene.ground);
         }
       }
     });
@@ -564,6 +595,7 @@ Rubik.Scene = new Class({
   }
 });
 Transitioning = false;
+Solving = false;
 resetTransition = function() {
   Transitioning = false;
   return this.removeEvent('complete', resetTransition);
@@ -572,7 +604,36 @@ Rubik.Rubik = new Class({
   initialize: function(scene) {
     this.scene = scene;
     this.cubes = [];
+    this.history = [];
     return this;
+  },
+  solveHistory: function() {
+    this.hid = setInterval(this.historyStepBack.bind(this), TweenDuration * 2);
+    return (Solving = true);
+  },
+  historyStepBack: function() {
+    var laststep;
+    console.log(this.history.length);
+    if (this.history.length > 0) {
+      laststep = this.history.pop();
+      switch (laststep.type) {
+      case "rotateX":
+        return this.rotateX(laststep.value);
+      case "rotateY":
+        return this.rotateY(laststep.value);
+      case "rotateZ":
+        return this.rotateZ(laststep.value);
+      case "rotateLevel":
+        return this.rotateLevel(laststep.value, laststep.level);
+      case "rotateColumn":
+        return this.rotateColumn(laststep.value, laststep.level);
+      case "rotateRow":
+        return this.rotateRow(laststep.value, laststep.level);
+      }
+    } else {
+      Solving = false;
+      return clearInterval(this.hid);
+    }
   },
   rotateX: function(x) {
     var _a, _b, _c, cube, tween;
@@ -583,7 +644,11 @@ Rubik.Rubik = new Class({
         cube = _b[_a];
         tween = cube.rotateX(x);
       }
-      return tween.addEvent('complete', resetTransition);
+      tween.addEvent('complete', resetTransition);
+      return !Solving ? this.history.push({
+        type: 'rotateX',
+        value: -x
+      }) : null;
     }
   },
   rotateY: function(x) {
@@ -595,7 +660,11 @@ Rubik.Rubik = new Class({
         cube = _b[_a];
         tween = cube.rotateY(x);
       }
-      return tween.addEvent('complete', resetTransition);
+      tween.addEvent('complete', resetTransition);
+      return !Solving ? this.history.push({
+        type: 'rotateY',
+        value: -x
+      }) : null;
     }
   },
   rotateZ: function(x) {
@@ -607,7 +676,11 @@ Rubik.Rubik = new Class({
         cube = _b[_a];
         tween = cube.rotateZ(x);
       }
-      return tween.addEvent('complete', resetTransition);
+      tween.addEvent('complete', resetTransition);
+      return !Solving ? this.history.push({
+        type: 'rotateZ',
+        value: -x
+      }) : null;
     }
   },
   rotateLevel: function(x, level) {
@@ -621,7 +694,12 @@ Rubik.Rubik = new Class({
           tween = cube.rotateY(x);
         }
       }
-      return tween.addEvent('complete', resetTransition);
+      tween.addEvent('complete', resetTransition);
+      return !Solving ? this.history.push({
+        type: 'rotateLevel',
+        value: -x,
+        level: level
+      }) : null;
     }
   },
   rotateColumn: function(x, level) {
@@ -635,7 +713,12 @@ Rubik.Rubik = new Class({
           tween = cube.rotateX(x);
         }
       }
-      return tween.addEvent('complete', resetTransition);
+      tween.addEvent('complete', resetTransition);
+      return !Solving ? this.history.push({
+        type: 'rotateColumn',
+        value: -x,
+        level: level
+      }) : null;
     }
   },
   rotateRow: function(x, level) {
@@ -649,7 +732,12 @@ Rubik.Rubik = new Class({
           tween = cube.rotateZ(x);
         }
       }
-      return tween.addEvent('complete', resetTransition);
+      tween.addEvent('complete', resetTransition);
+      return !Solving ? this.history.push({
+        type: 'rotateRow',
+        value: -x,
+        level: level
+      }) : null;
     }
   },
   removeCubes: function() {
@@ -660,6 +748,82 @@ Rubik.Rubik = new Class({
       this.scene.scene.removeObject(cube.base);
     }
     return this.cubes.empty();
+  },
+  checkSolve: function() {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, cube, tmpmat, x330, xm330, y330, ym330, z330, zm330;
+    z330 = this.cubes.filter(function(cube) {
+      return Math.round(cube.base.position.z) === 330 ? true : false;
+    });
+    zm330 = this.cubes.filter(function(cube) {
+      return Math.round(cube.base.position.z) === -330 ? true : false;
+    });
+    y330 = this.cubes.filter(function(cube) {
+      return Math.round(cube.base.position.y) === 330 ? true : false;
+    });
+    ym330 = this.cubes.filter(function(cube) {
+      return Math.round(cube.base.position.y) === -330 ? true : false;
+    });
+    x330 = this.cubes.filter(function(cube) {
+      return Math.round(cube.base.position.x) === 330 ? true : false;
+    });
+    xm330 = this.cubes.filter(function(cube) {
+      return Math.round(cube.base.position.x) === -330 ? true : false;
+    });
+    tmpmat = z330[0].base.geometry.faces[1].material[0];
+    _b = z330;
+    for (_a = 0, _c = _b.length; _a < _c; _a++) {
+      cube = _b[_a];
+      console.log(cube.base.geometry.faces[1].material[0] === tmpmat);
+      if (cube.base.geometry.faces[1].material[0] !== tmpmat) {
+        return false;
+      }
+    }
+    tmpmat = zm330[0].base.geometry.faces[0].material[0];
+    _e = zm330;
+    for (_d = 0, _f = _e.length; _d < _f; _d++) {
+      cube = _e[_d];
+      console.log(cube.base.geometry.faces[0].material[0] === tmpmat);
+      if (cube.base.geometry.faces[0].material[0] !== tmpmat) {
+        return false;
+      }
+    }
+    tmpmat = y330[0].base.geometry.faces[5].material[0];
+    _h = y330;
+    for (_g = 0, _i = _h.length; _g < _i; _g++) {
+      cube = _h[_g];
+      console.log(cube.base.geometry.faces[5].material[0] === tmpmat);
+      if (cube.base.geometry.faces[5].material[0] !== tmpmat) {
+        return false;
+      }
+    }
+    tmpmat = ym330[0].base.geometry.faces[3].material[0];
+    _k = ym330;
+    for (_j = 0, _l = _k.length; _j < _l; _j++) {
+      cube = _k[_j];
+      console.log(cube.base.geometry.faces[3].material[0] === tmpmat);
+      if (cube.base.geometry.faces[3].material[0] !== tmpmat) {
+        return false;
+      }
+    }
+    tmpmat = x330[0].base.geometry.faces[2].material[0];
+    _n = x330;
+    for (_m = 0, _o = _n.length; _m < _o; _m++) {
+      cube = _n[_m];
+      console.log(cube.base.geometry.faces[2].material[0] === tmpmat);
+      if (cube.base.geometry.faces[2].material[0] !== tmpmat) {
+        return false;
+      }
+    }
+    tmpmat = xm330[0].base.geometry.faces[4].material[0];
+    _q = xm330;
+    for (_p = 0, _r = _q.length; _p < _r; _p++) {
+      cube = _q[_p];
+      console.log(cube.base.geometry.faces[4].material[0] === tmpmat);
+      if (cube.base.geometry.faces[4].material[0] !== tmpmat) {
+        return false;
+      }
+    }
+    return true;
   },
   buildCube: function() {
     var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, cube, face, i, j, k;
@@ -680,22 +844,22 @@ Rubik.Rubik = new Class({
     for (_a = 0, _c = _b.length; _a < _c; _a++) {
       cube = _b[_a];
       if (Math.round(cube.base.position.z) === 330) {
-        cube.base.geometry.faces[1].material = [new THREE.MeshColorFillMaterial(0xffffff, 1)];
+        cube.base.geometry.faces[1].material = [CUBE_MATERIALS['white']];
       }
       if (Math.round(cube.base.position.y) === 330) {
-        cube.base.geometry.faces[5].material = [new THREE.MeshColorFillMaterial(0x00ff00, 1)];
+        cube.base.geometry.faces[5].material = [CUBE_MATERIALS['green']];
       }
       if (Math.round(cube.base.position.x) === 330) {
-        cube.base.geometry.faces[2].material = [new THREE.MeshColorFillMaterial(0x0000ff, 1)];
+        cube.base.geometry.faces[2].material = [CUBE_MATERIALS['blue']];
       }
       if (Math.round(cube.base.position.x) === -330) {
-        cube.base.geometry.faces[4].material = [new THREE.MeshColorFillMaterial(0xff0000, 1)];
+        cube.base.geometry.faces[4].material = [CUBE_MATERIALS['red']];
       }
       if (Math.round(cube.base.position.y) === -330) {
-        cube.base.geometry.faces[3].material = [new THREE.MeshColorFillMaterial(0xffff00, 1)];
+        cube.base.geometry.faces[3].material = [CUBE_MATERIALS['yellow']];
       }
       if (Math.round(cube.base.position.z) === -330) {
-        cube.base.geometry.faces[0].material = [new THREE.MeshColorFillMaterial(0xFF6A00, 1)];
+        cube.base.geometry.faces[0].material = [CUBE_MATERIALS['orange']];
       }
     }
     _d = []; _f = this.cubes;

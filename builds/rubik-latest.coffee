@@ -3,6 +3,13 @@ STROKE_MATERIAL = new THREE.MeshColorStrokeMaterial 0x000000, 0.2 ,2
 STROKE_MATERIAL2 = new THREE.MeshColorStrokeMaterial 0x000000, 0.9 ,5
 MATERIAL_BLACK = new THREE.MeshColorFillMaterial( 0x000000, 0.8 )
 CUBE_SIZE = 300
+CUBE_MATERIALS = []
+CUBE_MATERIALS['white'] = new THREE.MeshColorFillMaterial( 0xffffff, 1 )
+CUBE_MATERIALS['red'] = new THREE.MeshColorFillMaterial( 0xff0000, 1 )
+CUBE_MATERIALS['orange'] = new THREE.MeshColorFillMaterial( 0xFF6A00, 1 )
+CUBE_MATERIALS['yellow'] = new THREE.MeshColorFillMaterial( 0xffff00, 1 )
+CUBE_MATERIALS['blue'] = new THREE.MeshColorFillMaterial( 0x0000ff, 1 )
+CUBE_MATERIALS['green'] = new THREE.MeshColorFillMaterial( 0x00ff00, 1 )
 TweenDuration = 250
 Rubik = {}
 
@@ -253,6 +260,20 @@ Rubik.Scene = new Class {
     
     @keyboard = new UserKeyboardShortcuts({active:true});
     @keyboard.addShortcuts {
+      plusduration: {
+        keys:'+'
+        description: 'Increment rotation duration'
+        handler: (e)->
+          e.stop()
+          TweenDuration += 10
+      }
+      minusduration: {
+        keys:'-'
+        description: 'decrement rotation duration'
+        handler: (e)->
+          e.stop()
+          TweenDuration -= 10
+      }
       rotatey: {
         keys:'shift+q'
         description: 'Rotate Y'
@@ -359,6 +380,17 @@ Rubik.Scene = new Class {
             ShuffleID = null
           else
             ShuffleID = setInterval(Scene.randomRotation,TweenDuration*2)
+      }
+      ground: {
+        keys:'g'
+        description: 'Ground on / off'
+        handler: (e) ->
+          e.stop()
+          if Scene.scene.objects.indexOf( Scene.ground ) >= 0
+            Scene.scene.removeObject Scene.ground
+          else
+            Scene.scene.addObject Scene.ground 
+          
       }
       
     }
@@ -507,14 +539,41 @@ Rubik.Scene = new Class {
 
 
 Transitioning = false
+Solving = false
 resetTransition = ->
   Transitioning = false
   @removeEvent 'complete', resetTransition
+  #check complete
 Rubik.Rubik = new Class {
   initialize: (scene) ->
     @scene = scene
     @cubes = []
+    @history = []
     @
+  
+  solveHistory: ->
+    @hid = setInterval(@historyStepBack.bind(@) ,TweenDuration*2)
+    Solving = true
+  historyStepBack: ->
+    console.log @history.length
+    if @history.length > 0
+      laststep = @history.pop()
+      switch laststep.type
+        when "rotateX"
+          @rotateX laststep.value
+        when "rotateY"
+          @rotateY laststep.value
+        when "rotateZ"
+          @rotateZ laststep.value
+        when "rotateLevel"
+          @rotateLevel laststep.value, laststep.level
+        when "rotateColumn"
+          @rotateColumn laststep.value, laststep.level
+        when "rotateRow"
+          @rotateRow laststep.value, laststep.level
+    else
+      Solving = false
+      clearInterval @hid
   
   rotateX: (x) ->
     if not Transitioning
@@ -522,18 +581,24 @@ Rubik.Rubik = new Class {
       for cube in @cubes
         tween = cube.rotateX x
       tween.addEvent 'complete', resetTransition
+      if not Solving
+        @history.push {type:'rotateX',value:-x}
   rotateY: (x) ->
     if not Transitioning
       Transitioning = true
       for cube in @cubes
         tween = cube.rotateY x
       tween.addEvent 'complete', resetTransition
+      if not Solving
+        @history.push {type:'rotateY',value:-x}
   rotateZ: (x) ->
     if not Transitioning
       Transitioning = true
       for cube in @cubes
         tween = cube.rotateZ x
       tween.addEvent 'complete', resetTransition
+      if not Solving
+        @history.push {type:'rotateZ',value:-x}
   rotateLevel: (x,level) ->
     if not Transitioning
       Transitioning = true
@@ -541,6 +606,8 @@ Rubik.Rubik = new Class {
         if Math.round(cube.base.position.y) is level
           tween = cube.rotateY x
       tween.addEvent 'complete', resetTransition
+      if not Solving
+        @history.push {type:'rotateLevel',value:-x,level:level}
   rotateColumn: (x,level) ->
     if not Transitioning
       Transitioning = true
@@ -548,6 +615,8 @@ Rubik.Rubik = new Class {
         if Math.round(cube.base.position.x) is level
           tween = cube.rotateX x
       tween.addEvent 'complete', resetTransition
+      if not Solving
+        @history.push {type:'rotateColumn',value:-x,level:level}
   rotateRow: (x,level) ->
     if not Transitioning
       Transitioning = true
@@ -555,11 +624,67 @@ Rubik.Rubik = new Class {
         if Math.round(cube.base.position.z) is level
           tween = cube.rotateZ x
       tween.addEvent 'complete', resetTransition
+      if not Solving
+        @history.push {type:'rotateRow',value:-x,level:level}
   
   removeCubes: ->
     for cube in @cubes
       @scene.scene.removeObject cube.base
     @cubes.empty()
+  
+  checkSolve: ->
+    z330 = @cubes.filter (cube) ->
+      if Math.round(cube.base.position.z) is 330 then true else false
+      
+    zm330 = @cubes.filter (cube) ->
+      if Math.round(cube.base.position.z) is -330 then true else false
+      
+    y330 = @cubes.filter (cube) ->
+      if Math.round(cube.base.position.y) is 330 then true else false
+      
+    ym330 = @cubes.filter (cube) ->
+      if Math.round(cube.base.position.y) is -330 then true else false
+      
+    x330 = @cubes.filter (cube) ->
+      if Math.round(cube.base.position.x) is 330 then true else false
+      
+    xm330 = @cubes.filter (cube) ->
+      if Math.round(cube.base.position.x) is -330 then true else false
+      
+    tmpmat = z330[0].base.geometry.faces[1].material[0]
+    for cube in z330
+      console.log cube.base.geometry.faces[1].material[0] is tmpmat
+      if cube.base.geometry.faces[1].material[0] isnt tmpmat
+          return false
+          
+    tmpmat = zm330[0].base.geometry.faces[0].material[0]
+    for cube in zm330
+      console.log cube.base.geometry.faces[0].material[0] is tmpmat
+      if cube.base.geometry.faces[0].material[0] isnt tmpmat
+          return false
+          
+    tmpmat = y330[0].base.geometry.faces[5].material[0]
+    for cube in y330
+      console.log cube.base.geometry.faces[5].material[0] is tmpmat
+      if cube.base.geometry.faces[5].material[0] isnt tmpmat
+          return false
+          
+    tmpmat = ym330[0].base.geometry.faces[3].material[0]
+    for cube in ym330
+      console.log cube.base.geometry.faces[3].material[0] is tmpmat
+      if cube.base.geometry.faces[3].material[0] isnt tmpmat
+          return false
+    tmpmat = x330[0].base.geometry.faces[2].material[0]
+    for cube in x330
+      console.log cube.base.geometry.faces[2].material[0] is tmpmat
+      if cube.base.geometry.faces[2].material[0] isnt tmpmat
+          return false
+    tmpmat = xm330[0].base.geometry.faces[4].material[0]
+    for cube in xm330
+      console.log cube.base.geometry.faces[4].material[0] is tmpmat
+      if cube.base.geometry.faces[4].material[0] isnt tmpmat
+          return false
+    true
         
   buildCube: ->
     for i in [0..2]
@@ -575,17 +700,17 @@ Rubik.Rubik = new Class {
           
     for cube in @cubes
       if Math.round(cube.base.position.z) is 330
-        cube.base.geometry.faces[1].material = [new THREE.MeshColorFillMaterial( 0xffffff, 1 )]
+        cube.base.geometry.faces[1].material = [CUBE_MATERIALS['white']]
       if Math.round(cube.base.position.y) is 330
-        cube.base.geometry.faces[5].material = [new THREE.MeshColorFillMaterial( 0x00ff00, 1 )]
+        cube.base.geometry.faces[5].material = [CUBE_MATERIALS['green']]
       if Math.round(cube.base.position.x) is 330
-        cube.base.geometry.faces[2].material = [new THREE.MeshColorFillMaterial( 0x0000ff, 1 )]
+        cube.base.geometry.faces[2].material = [CUBE_MATERIALS['blue']]
       if Math.round(cube.base.position.x) is -330
-        cube.base.geometry.faces[4].material = [new THREE.MeshColorFillMaterial( 0xff0000, 1 )]
+        cube.base.geometry.faces[4].material = [CUBE_MATERIALS['red']]
       if Math.round(cube.base.position.y) is -330
-        cube.base.geometry.faces[3].material = [new THREE.MeshColorFillMaterial( 0xffff00, 1 )]
+        cube.base.geometry.faces[3].material = [CUBE_MATERIALS['yellow']]
       if Math.round(cube.base.position.z) is -330
-        cube.base.geometry.faces[0].material = [new THREE.MeshColorFillMaterial( 0xFF6A00, 1 )]
+        cube.base.geometry.faces[0].material = [CUBE_MATERIALS['orange']]
         
     for cube in @cubes
       for face in cube.base.geometry.faces

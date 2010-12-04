@@ -24,6 +24,20 @@ Rubik.Scene = new Class {
     
     @keyboard = new UserKeyboardShortcuts({active:true});
     @keyboard.addShortcuts {
+      plusduration: {
+        keys:'+'
+        description: 'Increment rotation duration'
+        handler: (e)->
+          e.stop()
+          TweenDuration += 10
+      }
+      minusduration: {
+        keys:'-'
+        description: 'decrement rotation duration'
+        handler: (e)->
+          e.stop()
+          TweenDuration -= 10
+      }
       rotatey: {
         keys:'shift+q'
         description: 'Rotate Y'
@@ -130,6 +144,17 @@ Rubik.Scene = new Class {
             ShuffleID = null
           else
             ShuffleID = setInterval(Scene.randomRotation,TweenDuration*2)
+      }
+      ground: {
+        keys:'g'
+        description: 'Ground on / off'
+        handler: (e) ->
+          e.stop()
+          if Scene.scene.objects.indexOf( Scene.ground ) >= 0
+            Scene.scene.removeObject Scene.ground
+          else
+            Scene.scene.addObject Scene.ground 
+          
       }
       
     }
