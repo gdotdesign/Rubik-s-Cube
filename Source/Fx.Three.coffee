@@ -17,6 +17,8 @@ Fx.Three = new Class {
     @
     
   start: (from, to) ->
+    @options.duration = Fx.Durations[TweenDuration] || TweenDuration.toInt()
+    @fromss = from
     if not to?
       angle =  @getAngle()* (180/Math.PI)
       to = angle+from
@@ -34,7 +36,7 @@ Fx.Three = new Class {
     theta
   complete: ->
     @parent()
-    @object.facePoint()
+    @object.facePoint(@fromss)
     Transitioning = false
   compute: (from, to, delta)->
     theta = @getAngle()

@@ -56,7 +56,8 @@ Rubik.Scene = new Class {
       rotatelevel: {
         keys:'q'
         description: 'Rotate Level'
-        handler: ( ->
+        handler: ( (e)->
+          e.stop()
           if @rollOveredCube?
             Rk.rotateLevel(90,Math.round(@rollOveredCube.position.y))
         ).bind @
@@ -68,6 +69,43 @@ Rubik.Scene = new Class {
           e.stop()
           if @rollOveredCube?
             Rk.rotateRow(90,Math.round(@rollOveredCube.position.z))
+        ).bind @
+      }
+      rotatecolumn: {
+        keys:'w'
+        description: 'Rotate Column'
+        handler: ( (e)->
+          e.stop()
+          if @rollOveredCube?
+            Rk.rotateColumn(90,Math.round(@rollOveredCube.position.x))
+        ).bind @
+      }
+      
+      rotatelevelb: {
+        keys:'a'
+        description: 'Rotate Level (-)'
+        handler: ( (e)->
+          e.stop()
+          if @rollOveredCube?
+            Rk.rotateLevel(-90,Math.round(@rollOveredCube.position.y))
+        ).bind @
+      }
+      rotaterowb: {
+        keys:'d'
+        description: 'Rotate Row (-)'
+        handler: ( (e) ->
+          e.stop()
+          if @rollOveredCube?
+            Rk.rotateRow(-90,Math.round(@rollOveredCube.position.z))
+        ).bind @
+      }
+      rotatecolumnb: {
+        keys:'s'
+        description: 'Rotate Column (-)'
+        handler: ( (e)->
+          e.stop()
+          if @rollOveredCube?
+            Rk.rotateColumn(-90,Math.round(@rollOveredCube.position.x))
         ).bind @
       }
       menu: {
@@ -83,7 +121,7 @@ Rubik.Scene = new Class {
             Scene.stepint = null
       }
       shuffle: {
-        keys:'s'
+        keys:'x'
         description: 'Shuffle on / off'
         handler: (e) ->
           e.stop()
@@ -91,17 +129,9 @@ Rubik.Scene = new Class {
             clearInterval(ShuffleID)
             ShuffleID = null
           else
-            ShuffleID = setInterval(Scene.randomRotation,600)
+            ShuffleID = setInterval(Scene.randomRotation,TweenDuration*2)
       }
-      rotatecolumn: {
-        keys:'w'
-        description: 'Rotate Column'
-        handler: ( ->
-          e.stop()
-          if @rollOveredCube?
-            Rk.rotateColumn(90,Math.round(@rollOveredCube.position.x))
-        ).bind @
-      }
+      
     }
     @keyboard.showAndChange()
     
@@ -157,7 +187,7 @@ Rubik.Scene = new Class {
     @stepint = setInterval  @step.bind(@), 1000/60 
     @
   randomRotation: ->
-    level = Math.round(Math.random()*5)
+    level = Math.round(Math.random()*11)
     axis = Math.round(Math.random()*2)
     switch axis
       when 0
@@ -179,6 +209,18 @@ Rubik.Scene = new Class {
         Rk.rotateY(90)
       when 5
         Rk.rotateZ(90)
+      when 6
+        Rk.rotateLevel(-90,a)
+      when 7
+        Rk.rotateColumn(-90,a)
+      when 8
+        Rk.rotateRow(-90,a)
+      when 9
+        Rk.rotateX(-90)
+      when 10
+        Rk.rotateY(-90)
+      when 11
+        Rk.rotateZ(-90)
   MouseDown: (e) ->    
     @mouseisdown = true
     @onMouseDownTheta = @theta

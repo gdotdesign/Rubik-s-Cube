@@ -2,7 +2,7 @@ Rubik.Cube = new Class {
   Implements: [Events, Options]
   options:{
     size: CUBE_SIZE
-    duration: 'short'
+    duration: TweenDuration
   }
   initialize: (options) ->
     @setOptions options
@@ -39,40 +39,70 @@ Rubik.Cube = new Class {
     #cube.position[ax1] = rotateX
     #cube.position[ax2] = rotateY
   rotateMaterialX: (counter) ->
-    tmpmat1 = @base.geometry.faces[0].material[0]
-    tmpmat2 = @base.geometry.faces[3].material[0]
-    tmpmat3 = @base.geometry.faces[1].material[0]
-    tmpmat4 = @base.geometry.faces[5].material[0]
-    @base.geometry.faces[0].material[0] = tmpmat4
-    @base.geometry.faces[3].material[0] = tmpmat1
-    @base.geometry.faces[1].material[0] = tmpmat2
-    @base.geometry.faces[5].material[0] = tmpmat3
+    if counter > 0
+      tmpmat1 = @base.geometry.faces[0].material[0]
+      tmpmat2 = @base.geometry.faces[3].material[0]
+      tmpmat3 = @base.geometry.faces[1].material[0]
+      tmpmat4 = @base.geometry.faces[5].material[0]
+      @base.geometry.faces[0].material[0] = tmpmat4
+      @base.geometry.faces[3].material[0] = tmpmat1
+      @base.geometry.faces[1].material[0] = tmpmat2
+      @base.geometry.faces[5].material[0] = tmpmat3
+    else
+      tmpmat1 = @base.geometry.faces[0].material[0]
+      tmpmat2 = @base.geometry.faces[3].material[0]
+      tmpmat3 = @base.geometry.faces[1].material[0]
+      tmpmat4 = @base.geometry.faces[5].material[0]
+      @base.geometry.faces[0].material[0] = tmpmat2
+      @base.geometry.faces[3].material[0] = tmpmat3
+      @base.geometry.faces[1].material[0] = tmpmat4
+      @base.geometry.faces[5].material[0] = tmpmat1
     
   rotateMaterialY: (counter) ->
-    tmpmat1 = @base.geometry.faces[2].material[0]
-    tmpmat2 = @base.geometry.faces[1].material[0]
-    tmpmat3 = @base.geometry.faces[4].material[0]
-    tmpmat4 = @base.geometry.faces[0].material[0]
-    @base.geometry.faces[2].material[0] = tmpmat4
-    @base.geometry.faces[1].material[0] = tmpmat1
-    @base.geometry.faces[4].material[0] = tmpmat2
-    @base.geometry.faces[0].material[0] = tmpmat3
+    if counter > 0
+      tmpmat1 = @base.geometry.faces[2].material[0]
+      tmpmat2 = @base.geometry.faces[1].material[0]
+      tmpmat3 = @base.geometry.faces[4].material[0]
+      tmpmat4 = @base.geometry.faces[0].material[0]
+      @base.geometry.faces[2].material[0] = tmpmat4
+      @base.geometry.faces[1].material[0] = tmpmat1
+      @base.geometry.faces[4].material[0] = tmpmat2
+      @base.geometry.faces[0].material[0] = tmpmat3
+    else
+      tmpmat1 = @base.geometry.faces[2].material[0]
+      tmpmat2 = @base.geometry.faces[1].material[0]
+      tmpmat3 = @base.geometry.faces[4].material[0]
+      tmpmat4 = @base.geometry.faces[0].material[0]
+      @base.geometry.faces[2].material[0] = tmpmat2
+      @base.geometry.faces[1].material[0] = tmpmat3
+      @base.geometry.faces[4].material[0] = tmpmat4
+      @base.geometry.faces[0].material[0] = tmpmat1
     
   rotateMaterialZ: (counter) ->
-    tmpmat1 = @base.geometry.faces[3].material[0]
-    tmpmat2 = @base.geometry.faces[2].material[0]
-    tmpmat3 = @base.geometry.faces[5].material[0]
-    tmpmat4 = @base.geometry.faces[4].material[0]
-    @base.geometry.faces[3].material[0] = tmpmat4
-    @base.geometry.faces[2].material[0] = tmpmat1
-    @base.geometry.faces[5].material[0] = tmpmat2
-    @base.geometry.faces[4].material[0] = tmpmat3
-    
+    if counter > 0
+      tmpmat1 = @base.geometry.faces[3].material[0]
+      tmpmat2 = @base.geometry.faces[2].material[0]
+      tmpmat3 = @base.geometry.faces[5].material[0]
+      tmpmat4 = @base.geometry.faces[4].material[0]
+      @base.geometry.faces[3].material[0] = tmpmat4
+      @base.geometry.faces[2].material[0] = tmpmat1
+      @base.geometry.faces[5].material[0] = tmpmat2
+      @base.geometry.faces[4].material[0] = tmpmat3
+    else
+      tmpmat1 = @base.geometry.faces[3].material[0]
+      tmpmat2 = @base.geometry.faces[2].material[0]
+      tmpmat3 = @base.geometry.faces[5].material[0]
+      tmpmat4 = @base.geometry.faces[4].material[0]
+      @base.geometry.faces[3].material[0] = tmpmat2
+      @base.geometry.faces[2].material[0] = tmpmat3
+      @base.geometry.faces[5].material[0] = tmpmat4
+      @base.geometry.faces[4].material[0] = tmpmat1
+      
   switchFaceMaterial: (face1, face2)->
     tempmat = face1.material[0]
     face1.material[0] = face2.material[0]
     face2.material[0] = tempmat
-  facePoint: ->
+  facePoint: (to) ->
     rotx = @base.rotation.x * (180/Math.PI)
     roty = @base.rotation.y * (180/Math.PI)
     rotz = @base.rotation.z * (180/Math.PI)
@@ -80,13 +110,13 @@ Rubik.Cube = new Class {
     #console.log @base.rotation.x* (180/Math.PI), @base.rotation.y* (180/Math.PI), @base.rotation.z* (180/Math.PI)
     if rotx != 0 
       @base.rotation.x = 0
-      @rotateMaterialX false
+      @rotateMaterialX to
     if roty != 0
       @base.rotation.y = 0
-      @rotateMaterialY()
+      @rotateMaterialY to
     if rotz != 0
       @base.rotation.z = 0
-      @rotateMaterialZ()  
+      @rotateMaterialZ to  
  
       
   setUpTweens: ->

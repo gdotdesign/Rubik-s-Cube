@@ -3,6 +3,7 @@ STROKE_MATERIAL = new THREE.MeshColorStrokeMaterial 0x000000, 0.2 ,2
 STROKE_MATERIAL2 = new THREE.MeshColorStrokeMaterial 0x000000, 0.9 ,5
 MATERIAL_BLACK = new THREE.MeshColorFillMaterial( 0x000000, 0.8 )
 CUBE_SIZE = 300
+TweenDuration = 250
 Rubik = {}
 
 
@@ -25,6 +26,8 @@ Fx.Three = new Class {
     @
     
   start: (from, to) ->
+    @options.duration = Fx.Durations[TweenDuration] || TweenDuration.toInt()
+    @fromss = from
     if not to?
       angle =  @getAngle()* (180/Math.PI)
       to = angle+from
@@ -42,7 +45,7 @@ Fx.Three = new Class {
     theta
   complete: ->
     @parent()
-    @object.facePoint()
+    @object.facePoint(@fromss)
     Transitioning = false
   compute: (from, to, delta)->
     theta = @getAngle()
@@ -66,12 +69,9 @@ Fx.Three = new Class {
       when 'y'
         rotation = (((theta * (180/Math.PI)) - (theta2 * (180/Math.PI)))*(Math.PI/180))
     @object['rotation'][@axis3] += rotation
-    #rotateX * (180/Math.PI)
-    #@parent arguments    
   set: (step) -> 
     if @options.property == 'rotation'
       step = step * (Math.PI/180)
-    #@object[@options.property][@options.axis] = step
     @parent step
 
 }
@@ -81,7 +81,7 @@ Rubik.Cube = new Class {
   Implements: [Events, Options]
   options:{
     size: CUBE_SIZE
-    duration: 'short'
+    duration: TweenDuration
   }
   initialize: (options) ->
     @setOptions options
@@ -118,40 +118,70 @@ Rubik.Cube = new Class {
     #cube.position[ax1] = rotateX
     #cube.position[ax2] = rotateY
   rotateMaterialX: (counter) ->
-    tmpmat1 = @base.geometry.faces[0].material[0]
-    tmpmat2 = @base.geometry.faces[3].material[0]
-    tmpmat3 = @base.geometry.faces[1].material[0]
-    tmpmat4 = @base.geometry.faces[5].material[0]
-    @base.geometry.faces[0].material[0] = tmpmat4
-    @base.geometry.faces[3].material[0] = tmpmat1
-    @base.geometry.faces[1].material[0] = tmpmat2
-    @base.geometry.faces[5].material[0] = tmpmat3
+    if counter > 0
+      tmpmat1 = @base.geometry.faces[0].material[0]
+      tmpmat2 = @base.geometry.faces[3].material[0]
+      tmpmat3 = @base.geometry.faces[1].material[0]
+      tmpmat4 = @base.geometry.faces[5].material[0]
+      @base.geometry.faces[0].material[0] = tmpmat4
+      @base.geometry.faces[3].material[0] = tmpmat1
+      @base.geometry.faces[1].material[0] = tmpmat2
+      @base.geometry.faces[5].material[0] = tmpmat3
+    else
+      tmpmat1 = @base.geometry.faces[0].material[0]
+      tmpmat2 = @base.geometry.faces[3].material[0]
+      tmpmat3 = @base.geometry.faces[1].material[0]
+      tmpmat4 = @base.geometry.faces[5].material[0]
+      @base.geometry.faces[0].material[0] = tmpmat2
+      @base.geometry.faces[3].material[0] = tmpmat3
+      @base.geometry.faces[1].material[0] = tmpmat4
+      @base.geometry.faces[5].material[0] = tmpmat1
     
   rotateMaterialY: (counter) ->
-    tmpmat1 = @base.geometry.faces[2].material[0]
-    tmpmat2 = @base.geometry.faces[1].material[0]
-    tmpmat3 = @base.geometry.faces[4].material[0]
-    tmpmat4 = @base.geometry.faces[0].material[0]
-    @base.geometry.faces[2].material[0] = tmpmat4
-    @base.geometry.faces[1].material[0] = tmpmat1
-    @base.geometry.faces[4].material[0] = tmpmat2
-    @base.geometry.faces[0].material[0] = tmpmat3
+    if counter > 0
+      tmpmat1 = @base.geometry.faces[2].material[0]
+      tmpmat2 = @base.geometry.faces[1].material[0]
+      tmpmat3 = @base.geometry.faces[4].material[0]
+      tmpmat4 = @base.geometry.faces[0].material[0]
+      @base.geometry.faces[2].material[0] = tmpmat4
+      @base.geometry.faces[1].material[0] = tmpmat1
+      @base.geometry.faces[4].material[0] = tmpmat2
+      @base.geometry.faces[0].material[0] = tmpmat3
+    else
+      tmpmat1 = @base.geometry.faces[2].material[0]
+      tmpmat2 = @base.geometry.faces[1].material[0]
+      tmpmat3 = @base.geometry.faces[4].material[0]
+      tmpmat4 = @base.geometry.faces[0].material[0]
+      @base.geometry.faces[2].material[0] = tmpmat2
+      @base.geometry.faces[1].material[0] = tmpmat3
+      @base.geometry.faces[4].material[0] = tmpmat4
+      @base.geometry.faces[0].material[0] = tmpmat1
     
   rotateMaterialZ: (counter) ->
-    tmpmat1 = @base.geometry.faces[3].material[0]
-    tmpmat2 = @base.geometry.faces[2].material[0]
-    tmpmat3 = @base.geometry.faces[5].material[0]
-    tmpmat4 = @base.geometry.faces[4].material[0]
-    @base.geometry.faces[3].material[0] = tmpmat4
-    @base.geometry.faces[2].material[0] = tmpmat1
-    @base.geometry.faces[5].material[0] = tmpmat2
-    @base.geometry.faces[4].material[0] = tmpmat3
-    
+    if counter > 0
+      tmpmat1 = @base.geometry.faces[3].material[0]
+      tmpmat2 = @base.geometry.faces[2].material[0]
+      tmpmat3 = @base.geometry.faces[5].material[0]
+      tmpmat4 = @base.geometry.faces[4].material[0]
+      @base.geometry.faces[3].material[0] = tmpmat4
+      @base.geometry.faces[2].material[0] = tmpmat1
+      @base.geometry.faces[5].material[0] = tmpmat2
+      @base.geometry.faces[4].material[0] = tmpmat3
+    else
+      tmpmat1 = @base.geometry.faces[3].material[0]
+      tmpmat2 = @base.geometry.faces[2].material[0]
+      tmpmat3 = @base.geometry.faces[5].material[0]
+      tmpmat4 = @base.geometry.faces[4].material[0]
+      @base.geometry.faces[3].material[0] = tmpmat2
+      @base.geometry.faces[2].material[0] = tmpmat3
+      @base.geometry.faces[5].material[0] = tmpmat4
+      @base.geometry.faces[4].material[0] = tmpmat1
+      
   switchFaceMaterial: (face1, face2)->
     tempmat = face1.material[0]
     face1.material[0] = face2.material[0]
     face2.material[0] = tempmat
-  facePoint: ->
+  facePoint: (to) ->
     rotx = @base.rotation.x * (180/Math.PI)
     roty = @base.rotation.y * (180/Math.PI)
     rotz = @base.rotation.z * (180/Math.PI)
@@ -159,13 +189,13 @@ Rubik.Cube = new Class {
     #console.log @base.rotation.x* (180/Math.PI), @base.rotation.y* (180/Math.PI), @base.rotation.z* (180/Math.PI)
     if rotx != 0 
       @base.rotation.x = 0
-      @rotateMaterialX false
+      @rotateMaterialX to
     if roty != 0
       @base.rotation.y = 0
-      @rotateMaterialY()
+      @rotateMaterialY to
     if rotz != 0
       @base.rotation.z = 0
-      @rotateMaterialZ()  
+      @rotateMaterialZ to  
  
       
   setUpTweens: ->
@@ -255,7 +285,8 @@ Rubik.Scene = new Class {
       rotatelevel: {
         keys:'q'
         description: 'Rotate Level'
-        handler: ( ->
+        handler: ( (e)->
+          e.stop()
           if @rollOveredCube?
             Rk.rotateLevel(90,Math.round(@rollOveredCube.position.y))
         ).bind @
@@ -267,6 +298,43 @@ Rubik.Scene = new Class {
           e.stop()
           if @rollOveredCube?
             Rk.rotateRow(90,Math.round(@rollOveredCube.position.z))
+        ).bind @
+      }
+      rotatecolumn: {
+        keys:'w'
+        description: 'Rotate Column'
+        handler: ( (e)->
+          e.stop()
+          if @rollOveredCube?
+            Rk.rotateColumn(90,Math.round(@rollOveredCube.position.x))
+        ).bind @
+      }
+      
+      rotatelevelb: {
+        keys:'a'
+        description: 'Rotate Level (-)'
+        handler: ( (e)->
+          e.stop()
+          if @rollOveredCube?
+            Rk.rotateLevel(-90,Math.round(@rollOveredCube.position.y))
+        ).bind @
+      }
+      rotaterowb: {
+        keys:'d'
+        description: 'Rotate Row (-)'
+        handler: ( (e) ->
+          e.stop()
+          if @rollOveredCube?
+            Rk.rotateRow(-90,Math.round(@rollOveredCube.position.z))
+        ).bind @
+      }
+      rotatecolumnb: {
+        keys:'s'
+        description: 'Rotate Column (-)'
+        handler: ( (e)->
+          e.stop()
+          if @rollOveredCube?
+            Rk.rotateColumn(-90,Math.round(@rollOveredCube.position.x))
         ).bind @
       }
       menu: {
@@ -282,7 +350,7 @@ Rubik.Scene = new Class {
             Scene.stepint = null
       }
       shuffle: {
-        keys:'s'
+        keys:'x'
         description: 'Shuffle on / off'
         handler: (e) ->
           e.stop()
@@ -290,17 +358,9 @@ Rubik.Scene = new Class {
             clearInterval(ShuffleID)
             ShuffleID = null
           else
-            ShuffleID = setInterval(Scene.randomRotation,600)
+            ShuffleID = setInterval(Scene.randomRotation,TweenDuration*2)
       }
-      rotatecolumn: {
-        keys:'w'
-        description: 'Rotate Column'
-        handler: ( ->
-          e.stop()
-          if @rollOveredCube?
-            Rk.rotateColumn(90,Math.round(@rollOveredCube.position.x))
-        ).bind @
-      }
+      
     }
     @keyboard.showAndChange()
     
@@ -356,7 +416,7 @@ Rubik.Scene = new Class {
     @stepint = setInterval  @step.bind(@), 1000/60 
     @
   randomRotation: ->
-    level = Math.round(Math.random()*5)
+    level = Math.round(Math.random()*11)
     axis = Math.round(Math.random()*2)
     switch axis
       when 0
@@ -378,6 +438,18 @@ Rubik.Scene = new Class {
         Rk.rotateY(90)
       when 5
         Rk.rotateZ(90)
+      when 6
+        Rk.rotateLevel(-90,a)
+      when 7
+        Rk.rotateColumn(-90,a)
+      when 8
+        Rk.rotateRow(-90,a)
+      when 9
+        Rk.rotateX(-90)
+      when 10
+        Rk.rotateY(-90)
+      when 11
+        Rk.rotateZ(-90)
   MouseDown: (e) ->    
     @mouseisdown = true
     @onMouseDownTheta = @theta

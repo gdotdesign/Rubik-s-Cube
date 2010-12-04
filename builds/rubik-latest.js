@@ -1,9 +1,10 @@
-var CUBE_SIZE, MATERIAL, MATERIAL_BLACK, MainMenu, MenuItems, Rubik, STROKE_MATERIAL, STROKE_MATERIAL2, ShuffleID, Transitioning, resetTransition;
+var CUBE_SIZE, MATERIAL, MATERIAL_BLACK, MainMenu, MenuItems, Rubik, STROKE_MATERIAL, STROKE_MATERIAL2, ShuffleID, Transitioning, TweenDuration, resetTransition;
 MATERIAL = new THREE.MeshFaceMaterial();
 STROKE_MATERIAL = new THREE.MeshColorStrokeMaterial(0x000000, 0.2, 2);
 STROKE_MATERIAL2 = new THREE.MeshColorStrokeMaterial(0x000000, 0.9, 5);
 MATERIAL_BLACK = new THREE.MeshColorFillMaterial(0x000000, 0.8);
 CUBE_SIZE = 300;
+TweenDuration = 250;
 Rubik = {};
 Fx.Three = new Class({
   Extends: Fx,
@@ -25,6 +26,8 @@ Fx.Three = new Class({
   },
   start: function(from, to) {
     var angle;
+    this.options.duration = Fx.Durations[TweenDuration] || TweenDuration.toInt();
+    this.fromss = from;
     if (!(typeof to !== "undefined" && to !== null)) {
       angle = this.getAngle() * (180 / Math.PI);
       to = angle + from;
@@ -46,7 +49,7 @@ Fx.Three = new Class({
   complete: function() {
     var Transitioning;
     this.parent();
-    this.object.facePoint();
+    this.object.facePoint(this.fromss);
     return (Transitioning = false);
   },
   compute: function(from, to, delta) {
@@ -84,7 +87,7 @@ Rubik.Cube = new Class({
   Implements: [Events, Options],
   options: {
     size: CUBE_SIZE,
-    duration: 'short'
+    duration: TweenDuration
   },
   initialize: function(options) {
     var geometry, size;
@@ -124,36 +127,69 @@ Rubik.Cube = new Class({
   },
   rotateMaterialX: function(counter) {
     var tmpmat1, tmpmat2, tmpmat3, tmpmat4;
-    tmpmat1 = this.base.geometry.faces[0].material[0];
-    tmpmat2 = this.base.geometry.faces[3].material[0];
-    tmpmat3 = this.base.geometry.faces[1].material[0];
-    tmpmat4 = this.base.geometry.faces[5].material[0];
-    this.base.geometry.faces[0].material[0] = tmpmat4;
-    this.base.geometry.faces[3].material[0] = tmpmat1;
-    this.base.geometry.faces[1].material[0] = tmpmat2;
-    return (this.base.geometry.faces[5].material[0] = tmpmat3);
+    if (counter > 0) {
+      tmpmat1 = this.base.geometry.faces[0].material[0];
+      tmpmat2 = this.base.geometry.faces[3].material[0];
+      tmpmat3 = this.base.geometry.faces[1].material[0];
+      tmpmat4 = this.base.geometry.faces[5].material[0];
+      this.base.geometry.faces[0].material[0] = tmpmat4;
+      this.base.geometry.faces[3].material[0] = tmpmat1;
+      this.base.geometry.faces[1].material[0] = tmpmat2;
+      return (this.base.geometry.faces[5].material[0] = tmpmat3);
+    } else {
+      tmpmat1 = this.base.geometry.faces[0].material[0];
+      tmpmat2 = this.base.geometry.faces[3].material[0];
+      tmpmat3 = this.base.geometry.faces[1].material[0];
+      tmpmat4 = this.base.geometry.faces[5].material[0];
+      this.base.geometry.faces[0].material[0] = tmpmat2;
+      this.base.geometry.faces[3].material[0] = tmpmat3;
+      this.base.geometry.faces[1].material[0] = tmpmat4;
+      return (this.base.geometry.faces[5].material[0] = tmpmat1);
+    }
   },
   rotateMaterialY: function(counter) {
     var tmpmat1, tmpmat2, tmpmat3, tmpmat4;
-    tmpmat1 = this.base.geometry.faces[2].material[0];
-    tmpmat2 = this.base.geometry.faces[1].material[0];
-    tmpmat3 = this.base.geometry.faces[4].material[0];
-    tmpmat4 = this.base.geometry.faces[0].material[0];
-    this.base.geometry.faces[2].material[0] = tmpmat4;
-    this.base.geometry.faces[1].material[0] = tmpmat1;
-    this.base.geometry.faces[4].material[0] = tmpmat2;
-    return (this.base.geometry.faces[0].material[0] = tmpmat3);
+    if (counter > 0) {
+      tmpmat1 = this.base.geometry.faces[2].material[0];
+      tmpmat2 = this.base.geometry.faces[1].material[0];
+      tmpmat3 = this.base.geometry.faces[4].material[0];
+      tmpmat4 = this.base.geometry.faces[0].material[0];
+      this.base.geometry.faces[2].material[0] = tmpmat4;
+      this.base.geometry.faces[1].material[0] = tmpmat1;
+      this.base.geometry.faces[4].material[0] = tmpmat2;
+      return (this.base.geometry.faces[0].material[0] = tmpmat3);
+    } else {
+      tmpmat1 = this.base.geometry.faces[2].material[0];
+      tmpmat2 = this.base.geometry.faces[1].material[0];
+      tmpmat3 = this.base.geometry.faces[4].material[0];
+      tmpmat4 = this.base.geometry.faces[0].material[0];
+      this.base.geometry.faces[2].material[0] = tmpmat2;
+      this.base.geometry.faces[1].material[0] = tmpmat3;
+      this.base.geometry.faces[4].material[0] = tmpmat4;
+      return (this.base.geometry.faces[0].material[0] = tmpmat1);
+    }
   },
   rotateMaterialZ: function(counter) {
     var tmpmat1, tmpmat2, tmpmat3, tmpmat4;
-    tmpmat1 = this.base.geometry.faces[3].material[0];
-    tmpmat2 = this.base.geometry.faces[2].material[0];
-    tmpmat3 = this.base.geometry.faces[5].material[0];
-    tmpmat4 = this.base.geometry.faces[4].material[0];
-    this.base.geometry.faces[3].material[0] = tmpmat4;
-    this.base.geometry.faces[2].material[0] = tmpmat1;
-    this.base.geometry.faces[5].material[0] = tmpmat2;
-    return (this.base.geometry.faces[4].material[0] = tmpmat3);
+    if (counter > 0) {
+      tmpmat1 = this.base.geometry.faces[3].material[0];
+      tmpmat2 = this.base.geometry.faces[2].material[0];
+      tmpmat3 = this.base.geometry.faces[5].material[0];
+      tmpmat4 = this.base.geometry.faces[4].material[0];
+      this.base.geometry.faces[3].material[0] = tmpmat4;
+      this.base.geometry.faces[2].material[0] = tmpmat1;
+      this.base.geometry.faces[5].material[0] = tmpmat2;
+      return (this.base.geometry.faces[4].material[0] = tmpmat3);
+    } else {
+      tmpmat1 = this.base.geometry.faces[3].material[0];
+      tmpmat2 = this.base.geometry.faces[2].material[0];
+      tmpmat3 = this.base.geometry.faces[5].material[0];
+      tmpmat4 = this.base.geometry.faces[4].material[0];
+      this.base.geometry.faces[3].material[0] = tmpmat2;
+      this.base.geometry.faces[2].material[0] = tmpmat3;
+      this.base.geometry.faces[5].material[0] = tmpmat4;
+      return (this.base.geometry.faces[4].material[0] = tmpmat1);
+    }
   },
   switchFaceMaterial: function(face1, face2) {
     var tempmat;
@@ -161,7 +197,7 @@ Rubik.Cube = new Class({
     face1.material[0] = face2.material[0];
     return (face2.material[0] = tempmat);
   },
-  facePoint: function() {
+  facePoint: function(to) {
     var ret, rotx, roty, rotz;
     rotx = this.base.rotation.x * (180 / Math.PI);
     roty = this.base.rotation.y * (180 / Math.PI);
@@ -169,15 +205,15 @@ Rubik.Cube = new Class({
     ret = [];
     if (rotx !== 0) {
       this.base.rotation.x = 0;
-      this.rotateMaterialX(false);
+      this.rotateMaterialX(to);
     }
     if (roty !== 0) {
       this.base.rotation.y = 0;
-      this.rotateMaterialY();
+      this.rotateMaterialY(to);
     }
     if (rotz !== 0) {
       this.base.rotation.z = 0;
-      return this.rotateMaterialZ();
+      return this.rotateMaterialZ(to);
     }
   },
   setUpTweens: function() {
@@ -302,8 +338,9 @@ Rubik.Scene = new Class({
       rotatelevel: {
         keys: 'q',
         description: 'Rotate Level',
-        handler: (function() {
+        handler: (function(e) {
           var _a;
+          e.stop();
           return (typeof (_a = this.rollOveredCube) !== "undefined" && _a !== null) ? Rk.rotateLevel(90, Math.round(this.rollOveredCube.position.y)) : null;
         }).bind(this)
       },
@@ -314,6 +351,42 @@ Rubik.Scene = new Class({
           var _a;
           e.stop();
           return (typeof (_a = this.rollOveredCube) !== "undefined" && _a !== null) ? Rk.rotateRow(90, Math.round(this.rollOveredCube.position.z)) : null;
+        }).bind(this)
+      },
+      rotatecolumn: {
+        keys: 'w',
+        description: 'Rotate Column',
+        handler: (function(e) {
+          var _a;
+          e.stop();
+          return (typeof (_a = this.rollOveredCube) !== "undefined" && _a !== null) ? Rk.rotateColumn(90, Math.round(this.rollOveredCube.position.x)) : null;
+        }).bind(this)
+      },
+      rotatelevelb: {
+        keys: 'a',
+        description: 'Rotate Level (-)',
+        handler: (function(e) {
+          var _a;
+          e.stop();
+          return (typeof (_a = this.rollOveredCube) !== "undefined" && _a !== null) ? Rk.rotateLevel(-90, Math.round(this.rollOveredCube.position.y)) : null;
+        }).bind(this)
+      },
+      rotaterowb: {
+        keys: 'd',
+        description: 'Rotate Row (-)',
+        handler: (function(e) {
+          var _a;
+          e.stop();
+          return (typeof (_a = this.rollOveredCube) !== "undefined" && _a !== null) ? Rk.rotateRow(-90, Math.round(this.rollOveredCube.position.z)) : null;
+        }).bind(this)
+      },
+      rotatecolumnb: {
+        keys: 's',
+        description: 'Rotate Column (-)',
+        handler: (function(e) {
+          var _a;
+          e.stop();
+          return (typeof (_a = this.rollOveredCube) !== "undefined" && _a !== null) ? Rk.rotateColumn(-90, Math.round(this.rollOveredCube.position.x)) : null;
         }).bind(this)
       },
       menu: {
@@ -332,7 +405,7 @@ Rubik.Scene = new Class({
         }
       },
       shuffle: {
-        keys: 's',
+        keys: 'x',
         description: 'Shuffle on / off',
         handler: function(e) {
           e.stop();
@@ -340,18 +413,9 @@ Rubik.Scene = new Class({
             clearInterval(ShuffleID);
             return (ShuffleID = null);
           } else {
-            return (ShuffleID = setInterval(Scene.randomRotation, 600));
+            return (ShuffleID = setInterval(Scene.randomRotation, TweenDuration * 2));
           }
         }
-      },
-      rotatecolumn: {
-        keys: 'w',
-        description: 'Rotate Column',
-        handler: (function() {
-          var _a;
-          e.stop();
-          return (typeof (_a = this.rollOveredCube) !== "undefined" && _a !== null) ? Rk.rotateColumn(90, Math.round(this.rollOveredCube.position.x)) : null;
-        }).bind(this)
       }
     });
     this.keyboard.showAndChange();
@@ -400,7 +464,7 @@ Rubik.Scene = new Class({
   },
   randomRotation: function() {
     var a, axis, level;
-    level = Math.round(Math.random() * 5);
+    level = Math.round(Math.random() * 11);
     axis = Math.round(Math.random() * 2);
     switch (axis) {
     case 0:
@@ -426,6 +490,18 @@ Rubik.Scene = new Class({
       return Rk.rotateY(90);
     case 5:
       return Rk.rotateZ(90);
+    case 6:
+      return Rk.rotateLevel(-90, a);
+    case 7:
+      return Rk.rotateColumn(-90, a);
+    case 8:
+      return Rk.rotateRow(-90, a);
+    case 9:
+      return Rk.rotateX(-90);
+    case 10:
+      return Rk.rotateY(-90);
+    case 11:
+      return Rk.rotateZ(-90);
     }
   },
   MouseDown: function(e) {
