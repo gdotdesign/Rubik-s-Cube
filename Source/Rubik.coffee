@@ -42,7 +42,7 @@ Rubik.Rubik = new Class {
         tween = cube.rotateX x
       tween.addEvent 'complete', resetTransition
       if not Solving
-        @history.push {type:'rotateX',value:-x}
+        @history.push {type:'rotateX',value:-x}    
   rotateY: (x) ->
     if not Transitioning
       Transitioning = true
@@ -59,6 +59,21 @@ Rubik.Rubik = new Class {
       tween.addEvent 'complete', resetTransition
       if not Solving
         @history.push {type:'rotateZ',value:-x}
+  rotLevel: (x,level)->
+    for cube in @cubes
+      if Math.round(cube.base.position.y) is level
+        tween = cube.rotY x
+    @history.push {type:'rotateLevel',value:-x,level:level}
+  rotRow: (x,level) ->
+    for cube in @cubes
+      if Math.round(cube.base.position.z) is level
+        tween = cube.rotZ x
+    @history.push {type:'rotateRow',value:-x,level:level}
+  rotColumn: (x,level) ->
+    for cube in @cubes
+      if Math.round(cube.base.position.x) is level
+        tween = cube.rotX x
+    @history.push {type:'rotateColumn',value:-x,level:level}
   rotateLevel: (x,level) ->
     if not Transitioning
       Transitioning = true

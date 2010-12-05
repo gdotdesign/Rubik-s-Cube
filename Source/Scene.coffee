@@ -211,6 +211,29 @@ Rubik.Scene = new Class {
     document.addEvent 'mouseup', @MouseUp.bind @
     @stepint = setInterval  @step.bind(@), 1000/60 
     @
+  shuffle: ->
+    level = Math.round(Math.random()*5)
+    axis = Math.round(Math.random()*2)
+    switch axis
+      when 0
+        a = -330
+      when 1
+        a = 0
+      when 2
+        a = 330
+    switch level
+      when 0
+        Rk.rotLevel(90,a)
+      when 1
+        Rk.rotColumn(90,a)
+      when 2
+        Rk.rotRow(90,a)
+      when 3
+        Rk.rotLevel(-90,a)
+      when 4
+        Rk.rotColumn(-90,a)
+      when 5
+        Rk.rotRow(-90,a)
   randomRotation: ->
     level = Math.round(Math.random()*11)
     axis = Math.round(Math.random()*2)

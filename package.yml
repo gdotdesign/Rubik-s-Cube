@@ -7,3 +7,4 @@ sources:
   - Source/Scene.coffee
   - Source/Rubik.coffee
   - Source/Frontend.coffee
+  - Source/Game.coffee

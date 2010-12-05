@@ -38,6 +38,12 @@ Fx.Three = new Class {
     @parent()
     @object.facePoint(@fromss)
     Transitioning = false
+  computeOnce: (to) ->
+    @fromss = to
+    angle =  @getAngle()* (180/Math.PI)
+    to = angle+to
+    @compute angle,to,1
+    @object.facePoint(@fromss)
   compute: (from, to, delta)->
     theta = @getAngle()
     r = @getRadius()

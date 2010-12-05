@@ -144,5 +144,11 @@ Rubik.Cube = new Class {
     @tweens['position']['y'].start to
   moveZ: (to) ->
     @tweens['position']['z'].start to 
+  rotX: (to) ->
+    @tweens['rotation']['x'].computeOnce to
+  rotY: (to) ->
+    @tweens['rotation']['y'].computeOnce to
+  rotZ: (to) ->
+    @tweens['rotation']['z'].computeOnce to
 }
 

@@ -54,6 +54,12 @@ Fx.Three = new Class {
     @parent()
     @object.facePoint(@fromss)
     Transitioning = false
+  computeOnce: (to) ->
+    @fromss = to
+    angle =  @getAngle()* (180/Math.PI)
+    to = angle+to
+    @compute angle,to,1
+    @object.facePoint(@fromss)
   compute: (from, to, delta)->
     theta = @getAngle()
     r = @getRadius()
@@ -230,6 +236,12 @@ Rubik.Cube = new Class {
     @tweens['position']['y'].start to
   moveZ: (to) ->
     @tweens['position']['z'].start to 
+  rotX: (to) ->
+    @tweens['rotation']['x'].computeOnce to
+  rotY: (to) ->
+    @tweens['rotation']['y'].computeOnce to
+  rotZ: (to) ->
+    @tweens['rotation']['z'].computeOnce to
 }
 
 
@@ -447,6 +459,29 @@ Rubik.Scene = new Class {
     document.addEvent 'mouseup', @MouseUp.bind @
     @stepint = setInterval  @step.bind(@), 1000/60 
     @
+  shuffle: ->
+    level = Math.round(Math.random()*5)
+    axis = Math.round(Math.random()*2)
+    switch axis
+      when 0
+        a = -330
+      when 1
+        a = 0
+      when 2
+        a = 330
+    switch level
+      when 0
+        Rk.rotLevel(90,a)
+      when 1
+        Rk.rotColumn(90,a)
+      when 2
+        Rk.rotRow(90,a)
+      when 3
+        Rk.rotLevel(-90,a)
+      when 4
+        Rk.rotColumn(-90,a)
+      when 5
+        Rk.rotRow(-90,a)
   randomRotation: ->
     level = Math.round(Math.random()*11)
     axis = Math.round(Math.random()*2)
@@ -582,7 +617,7 @@ Rubik.Rubik = new Class {
         tween = cube.rotateX x
       tween.addEvent 'complete', resetTransition
       if not Solving
-        @history.push {type:'rotateX',value:-x}
+        @history.push {type:'rotateX',value:-x}    
   rotateY: (x) ->
     if not Transitioning
       Transitioning = true
@@ -599,6 +634,21 @@ Rubik.Rubik = new Class {
       tween.addEvent 'complete', resetTransition
       if not Solving
         @history.push {type:'rotateZ',value:-x}
+  rotLevel: (x,level)->
+    for cube in @cubes
+      if Math.round(cube.base.position.y) is level
+        tween = cube.rotY x
+    @history.push {type:'rotateLevel',value:-x,level:level}
+  rotRow: (x,level) ->
+    for cube in @cubes
+      if Math.round(cube.base.position.z) is level
+        tween = cube.rotZ x
+    @history.push {type:'rotateRow',value:-x,level:level}
+  rotColumn: (x,level) ->
+    for cube in @cubes
+      if Math.round(cube.base.position.x) is level
+        tween = cube.rotX x
+    @history.push {type:'rotateColumn',value:-x,level:level}
   rotateLevel: (x,level) ->
     if not Transitioning
       Transitioning = true
@@ -752,4 +802,36 @@ MenuItems = [
   'About'
   'Close'
 ]
+
+
+Rubik.Game = new Class {
+  Implements: [Events, Options]
+  options: {
+    speed: 1000
+  }
+  initialize: (options) ->
+    @setOptions options
+    @shuffled = false
+    @time = 0
+  create: ->
+    
+  shuffle: ->
+    for i in [0..100]
+      Scene.shuffle()
+  start: ->
+    @id = setInterval @timer.bind(@), @options.speed
+  timer: ->
+    @time += 1
+    @elapsed = Math.floor(@time/60/60) + ":" + Math.floor(@time/60) + ":" + @time%60
+    console.log @elapsed
+  stop: ->
+    clearInterval @id
+    @id = null
+  pause: ->  
+    if @id?
+      clearInterval @id
+    else
+      @id = setInterval @timer.bind(@), @options.speed
+    
+}
 

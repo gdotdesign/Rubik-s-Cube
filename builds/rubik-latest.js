@@ -59,6 +59,14 @@ Fx.Three = new Class({
     this.object.facePoint(this.fromss);
     return (Transitioning = false);
   },
+  computeOnce: function(to) {
+    var angle;
+    this.fromss = to;
+    angle = this.getAngle() * (180 / Math.PI);
+    to = angle + to;
+    this.compute(angle, to, 1);
+    return this.object.facePoint(this.fromss);
+  },
   compute: function(from, to, delta) {
     var offsetTheta, r, rotateX, rotateY, rotation, rotationRadians, theta, theta2;
     theta = this.getAngle();
@@ -278,6 +286,15 @@ Rubik.Cube = new Class({
   },
   moveZ: function(to) {
     return this.tweens['position']['z'].start(to);
+  },
+  rotX: function(to) {
+    return this.tweens['rotation']['x'].computeOnce(to);
+  },
+  rotY: function(to) {
+    return this.tweens['rotation']['y'].computeOnce(to);
+  },
+  rotZ: function(to) {
+    return this.tweens['rotation']['z'].computeOnce(to);
   }
 });
 ShuffleID = null;
@@ -493,6 +510,36 @@ Rubik.Scene = new Class({
     this.stepint = setInterval(this.step.bind(this), 1000 / 60);
     return this;
   },
+  shuffle: function() {
+    var a, axis, level;
+    level = Math.round(Math.random() * 5);
+    axis = Math.round(Math.random() * 2);
+    switch (axis) {
+    case 0:
+      a = -330;
+      break;
+    case 1:
+      a = 0;
+      break;
+    case 2:
+      a = 330;
+      break;
+    }
+    switch (level) {
+    case 0:
+      return Rk.rotLevel(90, a);
+    case 1:
+      return Rk.rotColumn(90, a);
+    case 2:
+      return Rk.rotRow(90, a);
+    case 3:
+      return Rk.rotLevel(-90, a);
+    case 4:
+      return Rk.rotColumn(-90, a);
+    case 5:
+      return Rk.rotRow(-90, a);
+    }
+  },
   randomRotation: function() {
     var a, axis, level;
     level = Math.round(Math.random() * 11);
@@ -682,6 +729,51 @@ Rubik.Rubik = new Class({
         value: -x
       }) : null;
     }
+  },
+  rotLevel: function(x, level) {
+    var _a, _b, _c, cube, tween;
+    _b = this.cubes;
+    for (_a = 0, _c = _b.length; _a < _c; _a++) {
+      cube = _b[_a];
+      if (Math.round(cube.base.position.y) === level) {
+        tween = cube.rotY(x);
+      }
+    }
+    return this.history.push({
+      type: 'rotateLevel',
+      value: -x,
+      level: level
+    });
+  },
+  rotRow: function(x, level) {
+    var _a, _b, _c, cube, tween;
+    _b = this.cubes;
+    for (_a = 0, _c = _b.length; _a < _c; _a++) {
+      cube = _b[_a];
+      if (Math.round(cube.base.position.z) === level) {
+        tween = cube.rotZ(x);
+      }
+    }
+    return this.history.push({
+      type: 'rotateRow',
+      value: -x,
+      level: level
+    });
+  },
+  rotColumn: function(x, level) {
+    var _a, _b, _c, cube, tween;
+    _b = this.cubes;
+    for (_a = 0, _c = _b.length; _a < _c; _a++) {
+      cube = _b[_a];
+      if (Math.round(cube.base.position.x) === level) {
+        tween = cube.rotX(x);
+      }
+    }
+    return this.history.push({
+      type: 'rotateColumn',
+      value: -x,
+      level: level
+    });
   },
   rotateLevel: function(x, level) {
     var _a, _b, _c, cube, tween;
@@ -917,3 +1009,39 @@ MainMenu = new Class({
   }
 });
 MenuItems = ['High Scores', 'Shortcuts', 'Help', 'About', 'Close'];
+Rubik.Game = new Class({
+  Implements: [Events, Options],
+  options: {
+    speed: 1000
+  },
+  initialize: function(options) {
+    this.setOptions(options);
+    this.shuffled = false;
+    return (this.time = 0);
+  },
+  create: function() {},
+  shuffle: function() {
+    var _a, i;
+    _a = [];
+    for (i = 0; i <= 100; i++) {
+      _a.push(Scene.shuffle());
+    }
+    return _a;
+  },
+  start: function() {
+    return (this.id = setInterval(this.timer.bind(this), this.options.speed));
+  },
+  timer: function() {
+    this.time += 1;
+    this.elapsed = Math.floor(this.time / 60 / 60) + ":" + Math.floor(this.time / 60) + ":" + this.time % 60;
+    return console.log(this.elapsed);
+  },
+  stop: function() {
+    clearInterval(this.id);
+    return (this.id = null);
+  },
+  pause: function() {
+    var _a;
+    return (typeof (_a = this.id) !== "undefined" && _a !== null) ? clearInterval(this.id) : (this.id = setInterval(this.timer.bind(this), this.options.speed));
+  }
+});
