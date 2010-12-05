@@ -315,7 +315,7 @@ Rubik.Scene = new Class({
     this.width = window.innerWidth;
     this.height = window.innerHeight;
     this.theta = 45;
-    this.radious = 5000;
+    this.radious = 4000;
     this.onMouseDownTheta = 45;
     this.phi = 60;
     this.onMouseDownPhi = 60;
@@ -474,6 +474,7 @@ Rubik.Scene = new Class({
     this.camera.position.x = this.radious * Math.sin(this.theta * Math.PI / 360) * Math.cos(this.phi * Math.PI / 360);
     this.camera.position.y = this.radious * Math.sin(this.phi * Math.PI / 360);
     this.camera.position.z = this.radious * Math.cos(this.theta * Math.PI / 360) * Math.cos(this.phi * Math.PI / 360);
+    this.camera.target.position.y = -200;
     this.scene = new THREE.Scene();
     this.projector = new THREE.Projector();
     this.mouse2D = new THREE.Vector3(0, 10000, 0.5);
@@ -542,7 +543,7 @@ Rubik.Scene = new Class({
   },
   randomRotation: function() {
     var a, axis, level;
-    level = Math.round(Math.random() * 11);
+    level = Math.round(Math.random() * 5);
     axis = Math.round(Math.random() * 2);
     switch (axis) {
     case 0:
@@ -563,23 +564,11 @@ Rubik.Scene = new Class({
     case 2:
       return Rk.rotateRow(90, a);
     case 3:
-      return Rk.rotateX(90);
-    case 4:
-      return Rk.rotateY(90);
-    case 5:
-      return Rk.rotateZ(90);
-    case 6:
       return Rk.rotateLevel(-90, a);
-    case 7:
+    case 4:
       return Rk.rotateColumn(-90, a);
-    case 8:
+    case 5:
       return Rk.rotateRow(-90, a);
-    case 9:
-      return Rk.rotateX(-90);
-    case 10:
-      return Rk.rotateY(-90);
-    case 11:
-      return Rk.rotateZ(-90);
     }
   },
   MouseDown: function(e) {
@@ -972,6 +961,7 @@ Rubik.Rubik = new Class({
 MainMenu = new Class({
   initialize: function() {
     this.Float = new Core.Float();
+    this.Float.base.addClass('mainmenu');
     this.buildMenu();
     $("shower-and-changer").grab(new Element('h2', {
       text: 'Shortcuts'

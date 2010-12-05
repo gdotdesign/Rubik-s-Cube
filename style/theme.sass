@@ -3,8 +3,30 @@ body
   :background-color #aaa
   :margin 0px
   :overflow hidden
+  :background-image -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,0)),to(rgba(0,0,0,0.3)))
 
-#shower-and-changer, .float
+.right
+  :float right
+.left
+  :float left
+
+.infobar
+  li
+    :float left
+    :font-size 14px
+    :color #eee
+    :font-weight bold
+    :padding 10px
+    :text-shadow 0 1px 2px rgba(0,0,0,0.4)
+  :position absolute
+  :bottom 0
+  :right 0
+  :left 0
+  :background-image -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,0)),to(rgba(0,0,0,0.3)))
+  :-webkit-box-shadow 0 0 10px rgba(0,0,0,0.3)
+  :background-color rgba(0,0,0,0.5)
+
+#shower-and-changer, .mainmenu
   :-webkit-border-radius 5px
   :-webkit-box-shadow 0 0 10px rgba(0,0,0,0.3)
   :background-image -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,0)),to(rgba(0,0,0,0.3)))

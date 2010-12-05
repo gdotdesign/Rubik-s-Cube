@@ -1,6 +1,7 @@
 MainMenu = new Class {
   initialize: () ->
     @Float = new Core.Float()
+    @Float.base.addClass 'mainmenu'
     @buildMenu()
     $("shower-and-changer").grab new Element('h2',{text:'Shortcuts'}), 'top'
     @Float.base.addEvent 'click:relay(div)', @mmhandler.bind @

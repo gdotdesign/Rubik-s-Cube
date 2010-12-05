@@ -8,7 +8,6 @@ Rubik.Game = new Class {
     @shuffled = false
     @time = 0
   create: ->
-    
   shuffle: ->
     for i in [0..100]
       Scene.shuffle()

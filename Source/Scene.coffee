@@ -14,7 +14,7 @@ Rubik.Scene = new Class {
     @height = window.innerHeight
     
     @theta = 45
-    @radious = 5000
+    @radious = 4000
     @onMouseDownTheta = 45
     @phi = 60
     @onMouseDownPhi = 60
@@ -169,6 +169,8 @@ Rubik.Scene = new Class {
     @camera.position.y = @radious * Math.sin( @phi * Math.PI / 360 )
     @camera.position.z = @radious * Math.cos( @theta * Math.PI / 360 ) * Math.cos( @phi * Math.PI / 360 )
     
+    @camera.target.position.y = -200
+    
     @scene = new THREE.Scene()
     
     @projector = new THREE.Projector()
@@ -235,7 +237,7 @@ Rubik.Scene = new Class {
       when 5
         Rk.rotRow(-90,a)
   randomRotation: ->
-    level = Math.round(Math.random()*11)
+    level = Math.round(Math.random()*5)
     axis = Math.round(Math.random()*2)
     switch axis
       when 0
@@ -252,23 +254,11 @@ Rubik.Scene = new Class {
       when 2
         Rk.rotateRow(90,a)
       when 3
-        Rk.rotateX(90)
-      when 4
-        Rk.rotateY(90)
-      when 5
-        Rk.rotateZ(90)
-      when 6
         Rk.rotateLevel(-90,a)
-      when 7
+      when 4
         Rk.rotateColumn(-90,a)
-      when 8
+      when 5 
         Rk.rotateRow(-90,a)
-      when 9
-        Rk.rotateX(-90)
-      when 10
-        Rk.rotateY(-90)
-      when 11
-        Rk.rotateZ(-90)
   MouseDown: (e) ->    
     @mouseisdown = true
     @onMouseDownTheta = @theta
