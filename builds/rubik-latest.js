@@ -585,25 +585,21 @@ Rubik.Scene = new Class({
   },
   MouseWheel: function(e) {
     e.stop();
-    if (this.rollOveredCube) {
-      if (!e.shift && !e.alt) {
-        Rk.rotateLevel(90, Math.round(this.rollOveredCube.position.y));
-      }
-      if (e.shift && !e.alt) {
-        Rk.rotateRow(90, Math.round(this.rollOveredCube.position.z));
-      }
-      return e.alt && e.shift ? Rk.rotateColumn(90, Math.round(this.rollOveredCube.position.x)) : null;
-    }
+    this.radious += e.wheel * 400;
+    return this.positionCamera(e);
+  },
+  positionCamera: function(event) {
+    this.camera.position.x = this.radious * Math.sin(this.theta * Math.PI / 360) * Math.cos(this.phi * Math.PI / 360);
+    this.camera.position.y = this.radious * Math.sin(this.phi * Math.PI / 360);
+    this.camera.position.z = this.radious * Math.cos(this.theta * Math.PI / 360) * Math.cos(this.phi * Math.PI / 360);
+    return this.camera.updateMatrix();
   },
   MouseMove: function(event) {
     event.preventDefault();
     if (this.mouseisdown) {
       this.theta = -((event.client.x - this.onMouseDownPosition.x) * 0.5) + this.onMouseDownTheta;
       this.phi = ((event.client.y - this.onMouseDownPosition.y) * 0.5) + this.onMouseDownPhi;
-      this.camera.position.x = this.radious * Math.sin(this.theta * Math.PI / 360) * Math.cos(this.phi * Math.PI / 360);
-      this.camera.position.y = this.radious * Math.sin(this.phi * Math.PI / 360);
-      this.camera.position.z = this.radious * Math.cos(this.theta * Math.PI / 360) * Math.cos(this.phi * Math.PI / 360);
-      this.camera.updateMatrix();
+      this.positionCamera(event);
     }
     this.mouse2D.x = (event.client.x / this.width) * 2 - 1;
     return (this.mouse2D.y = -(event.client.y / this.height) * 2 + 1);

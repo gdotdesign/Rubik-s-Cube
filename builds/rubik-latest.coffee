@@ -519,13 +519,16 @@ Rubik.Scene = new Class {
     @onMouseDownPosition.y = e.client.y - @onMouseDownPosition.y
   MouseWheel: (e) ->
     e.stop()
-    if @rollOveredCube
-      if not e.shift and not e.alt
-        Rk.rotateLevel(90,Math.round(@rollOveredCube.position.y))
-      if e.shift and not e.alt
-        Rk.rotateRow(90,Math.round(@rollOveredCube.position.z))
-      if e.alt and e.shift
-        Rk.rotateColumn(90,Math.round(@rollOveredCube.position.x))
+    @radious += e.wheel*400
+    @positionCamera e
+  positionCamera: (event)->
+        
+    #@phi = Math.min( 180, Math.max( 0, @phi ) );
+
+    @camera.position.x = @radious * Math.sin( @theta * Math.PI / 360 ) * Math.cos( @phi * Math.PI / 360 )
+    @camera.position.y = @radious * Math.sin( @phi * Math.PI / 360 )
+    @camera.position.z = @radious * Math.cos( @theta * Math.PI / 360 ) * Math.cos( @phi * Math.PI / 360 )
+    @camera.updateMatrix()
   MouseMove: ( event ) ->
 
     event.preventDefault()
@@ -533,14 +536,7 @@ Rubik.Scene = new Class {
     if @mouseisdown
       @theta = - ( ( event.client.x - @onMouseDownPosition.x ) * 0.5 ) + @onMouseDownTheta
       @phi = ( ( event.client.y - @onMouseDownPosition.y ) * 0.5 ) + @onMouseDownPhi
-      
-      #@phi = Math.min( 180, Math.max( 0, @phi ) );
-
-      @camera.position.x = @radious * Math.sin( @theta * Math.PI / 360 ) * Math.cos( @phi * Math.PI / 360 )
-      @camera.position.y = @radious * Math.sin( @phi * Math.PI / 360 )
-      @camera.position.z = @radious * Math.cos( @theta * Math.PI / 360 ) * Math.cos( @phi * Math.PI / 360 )
-      @camera.updateMatrix()
-    
+      @positionCamera event
     @mouse2D.x = ( event.client.x / @width ) * 2 - 1
     @mouse2D.y = - ( event.client.y / @height ) * 2 + 1 
     
