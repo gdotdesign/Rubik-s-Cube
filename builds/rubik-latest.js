@@ -1,4 +1,4 @@
-var CUBE_MATERIALS, CUBE_SIZE, MATERIAL, MATERIAL_BLACK, MainMenu, MenuItems, Rubik, STROKE_MATERIAL, STROKE_MATERIAL2, ShuffleID, Solving, Transitioning, TweenDuration, resetTransition;
+var CUBE_MATERIALS, CUBE_SIZE, Game, MATERIAL, MATERIAL_BLACK, MainMenu, Rubik, STROKE_MATERIAL, STROKE_MATERIAL2, ShuffleID, Solving, Transitioning, TweenDuration, resetTransition;
 MATERIAL = new THREE.MeshFaceMaterial();
 STROKE_MATERIAL = new THREE.MeshColorStrokeMaterial(0x000000, 0.2, 2);
 STROKE_MATERIAL2 = new THREE.MeshColorStrokeMaterial(0x000000, 0.9, 5);
@@ -55,8 +55,8 @@ Fx.Three = new Class({
   },
   complete: function() {
     var Transitioning;
-    this.parent();
     this.object.facePoint(this.fromss);
+    this.parent();
     return (Transitioning = false);
   },
   computeOnce: function(to) {
@@ -299,7 +299,7 @@ Rubik.Cube = new Class({
 });
 ShuffleID = null;
 Rubik.Scene = new Class({
-  Impelments: Events,
+  Implements: Events,
   loadTexture: function(url) {
     var material, texture;
     material = new THREE.MeshBitmapMaterial(this.texture_placeholder);
@@ -474,7 +474,6 @@ Rubik.Scene = new Class({
     this.camera.position.x = this.radious * Math.sin(this.theta * Math.PI / 360) * Math.cos(this.phi * Math.PI / 360);
     this.camera.position.y = this.radious * Math.sin(this.phi * Math.PI / 360);
     this.camera.position.z = this.radious * Math.cos(this.theta * Math.PI / 360) * Math.cos(this.phi * Math.PI / 360);
-    this.camera.target.position.y = -200;
     this.scene = new THREE.Scene();
     this.projector = new THREE.Projector();
     this.mouse2D = new THREE.Vector3(0, 10000, 0.5);
@@ -482,7 +481,6 @@ Rubik.Scene = new Class({
     this.renderer = new THREE.CanvasRenderer();
     this.renderer.setSize(this.width, this.height);
     this.ground = new THREE.Mesh(new Plane(2500, 2500, 10, 10), [this.loadTexture('textures/backdrop3.png')]);
-    this.scene.addObject(this.ground);
     this.ground.rotation.x = -90 * (Math.PI / 180);
     this.ground.position.y = -900;
     this.ground.doublesided = true;
@@ -630,9 +628,12 @@ Transitioning = false;
 Solving = false;
 resetTransition = function() {
   Transitioning = false;
-  return this.removeEvent('complete', resetTransition);
+  this.removeEvent('complete', resetTransition);
+  console.log(Rk.checkSolve());
+  return Scene.fireEvent('check');
 };
 Rubik.Rubik = new Class({
+  Implements: Events,
   initialize: function(scene) {
     this.scene = scene;
     this.cubes = [];
@@ -645,7 +646,6 @@ Rubik.Rubik = new Class({
   },
   historyStepBack: function() {
     var laststep;
-    console.log(this.history.length);
     if (this.history.length > 0) {
       laststep = this.history.pop();
       switch (laststep.type) {
@@ -772,11 +772,14 @@ Rubik.Rubik = new Class({
         }
       }
       tween.addEvent('complete', resetTransition);
-      return !Solving ? this.history.push({
-        type: 'rotateLevel',
-        value: -x,
-        level: level
-      }) : null;
+      if (!Solving) {
+        this.history.push({
+          type: 'rotateLevel',
+          value: -x,
+          level: level
+        });
+      }
+      return this.fireEvent('step', new Rubik.Step('rotateLevel', -x, level));
     }
   },
   rotateColumn: function(x, level) {
@@ -791,11 +794,14 @@ Rubik.Rubik = new Class({
         }
       }
       tween.addEvent('complete', resetTransition);
-      return !Solving ? this.history.push({
-        type: 'rotateColumn',
-        value: -x,
-        level: level
-      }) : null;
+      if (!Solving) {
+        this.history.push({
+          type: 'rotateColumn',
+          value: -x,
+          level: level
+        });
+      }
+      return this.fireEvent('step', new Rubik.Step('rotateColumn', -x, level));
     }
   },
   rotateRow: function(x, level) {
@@ -810,11 +816,14 @@ Rubik.Rubik = new Class({
         }
       }
       tween.addEvent('complete', resetTransition);
-      return !Solving ? this.history.push({
-        type: 'rotateRow',
-        value: -x,
-        level: level
-      }) : null;
+      if (!Solving) {
+        this.history.push({
+          type: 'rotateRow',
+          value: -x,
+          level: level
+        });
+      }
+      return this.fireEvent('step', new Rubik.Step('rotateRow', -x, level));
     }
   },
   removeCubes: function() {
@@ -850,7 +859,6 @@ Rubik.Rubik = new Class({
     _b = z330;
     for (_a = 0, _c = _b.length; _a < _c; _a++) {
       cube = _b[_a];
-      console.log(cube.base.geometry.faces[1].material[0] === tmpmat);
       if (cube.base.geometry.faces[1].material[0] !== tmpmat) {
         return false;
       }
@@ -859,7 +867,6 @@ Rubik.Rubik = new Class({
     _e = zm330;
     for (_d = 0, _f = _e.length; _d < _f; _d++) {
       cube = _e[_d];
-      console.log(cube.base.geometry.faces[0].material[0] === tmpmat);
       if (cube.base.geometry.faces[0].material[0] !== tmpmat) {
         return false;
       }
@@ -868,7 +875,6 @@ Rubik.Rubik = new Class({
     _h = y330;
     for (_g = 0, _i = _h.length; _g < _i; _g++) {
       cube = _h[_g];
-      console.log(cube.base.geometry.faces[5].material[0] === tmpmat);
       if (cube.base.geometry.faces[5].material[0] !== tmpmat) {
         return false;
       }
@@ -877,7 +883,6 @@ Rubik.Rubik = new Class({
     _k = ym330;
     for (_j = 0, _l = _k.length; _j < _l; _j++) {
       cube = _k[_j];
-      console.log(cube.base.geometry.faces[3].material[0] === tmpmat);
       if (cube.base.geometry.faces[3].material[0] !== tmpmat) {
         return false;
       }
@@ -886,7 +891,6 @@ Rubik.Rubik = new Class({
     _n = x330;
     for (_m = 0, _o = _n.length; _m < _o; _m++) {
       cube = _n[_m];
-      console.log(cube.base.geometry.faces[2].material[0] === tmpmat);
       if (cube.base.geometry.faces[2].material[0] !== tmpmat) {
         return false;
       }
@@ -895,7 +899,6 @@ Rubik.Rubik = new Class({
     _q = xm330;
     for (_p = 0, _r = _q.length; _p < _r; _p++) {
       cube = _q[_p];
-      console.log(cube.base.geometry.faces[4].material[0] === tmpmat);
       if (cube.base.geometry.faces[4].material[0] !== tmpmat) {
         return false;
       }
@@ -954,47 +957,66 @@ Rubik.Rubik = new Class({
     return _d;
   }
 });
+Rubik.History = new Class({
+  initialize: function() {
+    return this;
+  }
+});
+Rubik.Step = new Class({
+  initialize: function(type, value, level) {
+    this.type = type;
+    this.value = value;
+    return (this.level = level);
+  }
+});
+Game = null;
 MainMenu = new Class({
   initialize: function() {
-    this.Float = new Core.Float();
-    this.Float.base.addClass('mainmenu');
-    this.buildMenu();
-    $("shower-and-changer").grab(new Element('h2', {
-      text: 'Shortcuts'
-    }), 'top');
-    this.Float.base.addEvent('click:relay(div)', this.mmhandler.bind(this));
+    var _a;
+    $("menu").addEvent('click:relay(li)', this.mmhandler.bindWithEvent(this));
+    this.el = new Element('div', {
+      "class": 'wrapper'
+    });
+    this.el.set('tween', {
+      duration: "250ms"
+    });
+    $$('.menu_wrapper').set('tween', {
+      duration: "250ms"
+    });
+    $$('.time_wrapper, .steps_wrapper').position();
+    $$('.time_wrapper').setStyle('top', 10);
+    $$('.steps_wrapper').setStyle('top', 65);
+    this.controlsHeight = 0;
+    this.menuHeight = 0;
+    if (typeof (_a = $("shower-and-changer")) !== "undefined" && _a !== null) {
+      this.el.wraps($("shower-and-changer"));
+      $$(".controls_toggle")[0].addEvent('click', (function() {
+        if (this.controlsHeight === 0) {
+          this.controlsHeight = this.el.getSize().y;
+        }
+        return this.el.getSize().y === 0 ? this.el.tween('height', this.controlsHeight) : this.el.tween('height', 0);
+      }).bind(this));
+    }
+    $$(".menu_toggle")[0].addEvent('click', (function() {
+      if (this.menuHeight === 0) {
+        this.menuHeight = $$('.menu_wrapper')[0].getSize().y;
+      }
+      return $$('.menu_wrapper')[0].getSize().y === 0 ? $$('.menu_wrapper')[0].tween('height', this.menuHeight) : $$('.menu_wrapper')[0].tween('height', 0);
+    }).bind(this));
     return this;
   },
   mmhandler: function(e) {
-    var _a;
-    switch (e.target.get('text')) {
-    case MenuItems[4]:
-      mm.Float.toggle();
-      if (!(typeof (_a = Scene.stepint) !== "undefined" && _a !== null)) {
-        return (Scene.stepint = setInterval(Scene.step.bind(Scene), 1000 / 60));
-      } else {
-        clearInterval(Scene.stepint);
-        return (Scene.stepint = null);
+    console.log(e.target.get('rel'));
+    switch (e.target.get('rel')) {
+    case 'new':
+      if (typeof Game !== "undefined" && Game !== null) {
+        Game.stop();
       }
-      break;
-    case MenuItems[1]:
-      return $("shower-and-changer").getStyle('display') === 'none' ? $("shower-and-changer").setStyle('display', 'block') : $("shower-and-changer").setStyle('display', 'none');
+      Game = new Rubik.Game();
+      return Game.start();
     }
-  },
-  buildMenu: function() {
-    var _a, _b, _c, _d, item;
-    _a = []; _c = MenuItems;
-    for (_b = 0, _d = _c.length; _b < _d; _b++) {
-      item = _c[_b];
-      _a.push(this.Float.base.grab(new Element('div', {
-        "class": 'menuitem',
-        text: item
-      })));
-    }
-    return _a;
   }
 });
-MenuItems = ['High Scores', 'Shortcuts', 'Help', 'About', 'Close'];
 Rubik.Game = new Class({
   Implements: [Events, Options],
   options: {
@@ -1002,27 +1024,43 @@ Rubik.Game = new Class({
   },
   initialize: function(options) {
     this.setOptions(options);
+    this.steps = 0;
     this.shuffled = false;
-    return (this.time = 0);
+    this.time = 0;
+    Scene.addEvent('check', (function() {
+      return Rk.checkSolve() ? this.stop() : null;
+    }).bindWithEvent(this));
+    return this;
   },
   create: function() {},
   shuffle: function() {
     var _a, i;
     _a = [];
-    for (i = 0; i <= 100; i++) {
+    for (i = 0; i <= 18; i++) {
       _a.push(Scene.shuffle());
     }
     return _a;
   },
   start: function() {
-    return (this.id = setInterval(this.timer.bind(this), this.options.speed));
+    this.history = new Rubik.History();
+    Rk.addEvent('step', (function() {
+      this.steps++;
+      return $('steps').set('text', "Steps: " + this.steps);
+    }).bindWithEvent(this));
+    this.id = setInterval(this.timer.bind(this), this.options.speed);
+    return this.shuffle();
   },
   timer: function() {
     this.time += 1;
-    this.elapsed = Math.floor(this.time / 60 / 60) + ":" + Math.floor(this.time / 60) + ":" + this.time % 60;
+    this.elapsed = "Time: " + Math.floor(this.time / 60 / 60) + ":" + Math.floor(this.time / 60) + ":" + this.time % 60;
+    $('time').set('text', this.elapsed);
     return console.log(this.elapsed);
   },
   stop: function() {
+    console.log('stopping');
+    console.log('game ended');
+    console.log('Time:' + this.elapsed);
+    console.log('Steps:' + this.steps);
     clearInterval(this.id);
     return (this.id = null);
   },

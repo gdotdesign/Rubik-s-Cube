@@ -6,5 +6,8 @@ sources:
   - Source/Cube.coffee
   - Source/Scene.coffee
   - Source/Rubik.coffee
+  - Source/History.coffee
+  - Source/Step.coffee
   - Source/Frontend.coffee
   - Source/Game.coffee
+

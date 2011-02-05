@@ -1,34 +1,41 @@
+Game = null
 MainMenu = new Class {
   initialize: () ->
-    @Float = new Core.Float()
-    @Float.base.addClass 'mainmenu'
-    @buildMenu()
-    $("shower-and-changer").grab new Element('h2',{text:'Shortcuts'}), 'top'
-    @Float.base.addEvent 'click:relay(div)', @mmhandler.bind @
+    $("menu").addEvent 'click:relay(li)', @mmhandler.bindWithEvent(@)
+    @el = new Element 'div', {class:'wrapper'}
+    @el.set 'tween', {duration: "250ms"}
+    $$('.menu_wrapper').set 'tween', {duration: "250ms"}
+    $$('.time_wrapper, .steps_wrapper').position()
+    $$('.time_wrapper').setStyle 'top',10
+    $$('.steps_wrapper').setStyle 'top',65
+    @controlsHeight = 0
+    @menuHeight = 0
+    if $("shower-and-changer")?
+      @el.wraps $("shower-and-changer")
+      $$(".controls_toggle")[0].addEvent 'click',( ->
+        if @controlsHeight == 0
+          @controlsHeight = @el.getSize().y
+        if @el.getSize().y == 0
+          @el.tween 'height', @controlsHeight
+        else
+          @el.tween 'height', 0 
+      ).bind @
+    $$(".menu_toggle")[0].addEvent 'click',( ->
+      if @menuHeight == 0
+        @menuHeight = $$('.menu_wrapper')[0].getSize().y
+      if $$('.menu_wrapper')[0].getSize().y == 0
+        $$('.menu_wrapper')[0].tween 'height', @menuHeight
+      else
+       $$('.menu_wrapper')[0].tween 'height', 0 
+    ).bind @
     @
   mmhandler: (e) ->
-    switch e.target.get('text')
-      when MenuItems[4]
-        mm.Float.toggle()
-        if not Scene.stepint?
-          Scene.stepint = setInterval Scene.step.bind(Scene), 1000/60 
-        else
-          clearInterval Scene.stepint
-          Scene.stepint = null
-      when MenuItems[1]
-        if $("shower-and-changer").getStyle('display') is 'none'
-          $("shower-and-changer").setStyle 'display', 'block'
-        else
-          $("shower-and-changer").setStyle 'display', 'none'
+    console.log e.target.get('rel')
+    switch e.target.get('rel')
+      when 'new'
+        if Game?
+          Game.stop()
+        Game = new Rubik.Game()
+        Game.start()
         
-  buildMenu: () ->  
-    for item in MenuItems
-      @Float.base.grab new Element 'div', {class:'menuitem',text:item}
 }
-MenuItems = [
-  'High Scores'
-  'Shortcuts'
-  'Help'
-  'About'
-  'Close'
-]

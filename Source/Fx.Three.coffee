@@ -35,8 +35,8 @@ Fx.Three = new Class {
     theta = Math.atan2(@object.position[@options.axis2],@object.position[@options.axis1])
     theta
   complete: ->
-    @parent()
     @object.facePoint(@fromss)
+    @parent()
     Transitioning = false
   computeOnce: (to) ->
     @fromss = to

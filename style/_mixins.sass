@@ -1,0 +1,76 @@
+//Rounded Corners (shorthand)
+
+=round($top_left: 0, $top_right: 0, $bottom_left: 0, $bottom_right: 0)
+  -webkit-border-radius: $top_left $top_right $bottom_right $bottom_left
+  -moz-border-radius: $top_left $top_right $bottom_right $bottom_left
+  border-radius: $top_left $top_right $bottom_right $bottom_left
+
+=transition_duration($duration)
+  -webkit-transition-duration: $duration
+  -moz-transition-duration: $duration
+  -o-transition-duration: $duration
+//Rounded Corners (full)
+
+=round_full($value)
+  -webkit-border-radius: $value
+  -moz-border-radius: $value
+  border-radius: $value
+
+=round_full_imp($value)
+  -webkit-border-radius: $value !important
+
+//Relative Positioning
+
+=position_relative($top, $left)
+  position: relative
+  top: $top
+  left: $left
+
+//Arrow_left
+
+=arrow_right($size: 10px, $color: #000)
+  font-size: 0px
+  line-height: 0%
+  width: 0px
+  border-top: $size solid transparent
+  border-bottom: $size solid transparent
+  border-right none
+  border-left: $size solid $color
+
+=arrow_left($size: 10px, $color: #000)
+  font-size: 0px
+  line-height: 0%
+  width: 0px
+  border-top: $size solid transparent
+  border-bottom: $size solid transparent
+  border-left none
+  border-right: $size solid $color
+
+//Opacity
+
+=opacity($value)
+  opacity: $value / 100
+
+//Box-shadow
+
+=box_shadow_inner($ho: 0, $vo: 0, $blur: 5, $color: #000)
+  -webkit-box-shadow: $ho $vo $blur $color inset
+  -moz-box-shadow: $ho $vo $blur $color inset
+  box-shadow: $ho $vo $blur $color inset
+
+=box_shadow_inner_imp($ho: 0, $vo: 0, $blur: 5, $color: #000)
+  -webkit-box-shadow: $ho $vo $blur $color inset !important
+
+=box_shadow($ho: 0, $vo: 0, $blur: 5, $color: #000)
+  -webkit-box-shadow: $ho $vo $blur $color
+  -moz-box-shadow: $ho $vo $blur $color
+  box-shadow: $ho $vo $blur $color
+  
+=box_shadow_imp($ho: 0, $vo: 0, $blur: 5, $color: #000)
+  -webkit-box-shadow: $ho $vo $blur $color !important
+  
+//Gradient
+=linear_gradient($top: #fff,$bottom: #000)
+  :background-image -webkit-gradient(linear, 0% 0%, 0% 100%, from($top), to($bottom))
+  :background-image -moz-linear-gradient(center bottom,$bottom 0%,$top 100%)
+  :-pie-background linear-gradient($top,$bottom)

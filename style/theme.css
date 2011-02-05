@@ -1,9 +1,11 @@
+@import url(http://fonts.googleapis.com/css?family=Ubuntu:regular,bold,italic);
 body {
-  font-family: Arial, Sans;
-  background-color: #aaaaaa;
+  font-family: "Ubuntu", Arial, Sans;
+  background-color: #cccccc;
+  font-size: 14px;
+  color: #333333;
   margin: 0px;
-  overflow: hidden;
-  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, 0.3))); }
+  overflow: hidden; }
 
 .right {
   float: right; }
@@ -11,48 +13,129 @@ body {
 .left {
   float: left; }
 
-.infobar {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, 0.3)));
-  -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  background-color: rgba(0, 0, 0, 0.5); }
-  .infobar li {
-    float: left;
-    font-size: 14px;
-    color: #eeeeee;
-    font-weight: bold;
-    padding: 10px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4); }
+.clear {
+  clear: both; }
 
-#shower-and-changer, .mainmenu {
-  -webkit-border-radius: 5px;
-  -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, 0.3)));
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  background-color: rgba(0, 0, 0, 0.5);
-  color: #dddddd; }
+.controls_toggle {
+  width: 130px;
+  top: 10px;
+  right: 10px; }
 
-.menuitem {
-  width: 150px;
-  padding: 20px;
-  font-size: 18px;
-  font-weight: bold;
+.controls_toggle, .menu_toggle {
   text-align: center;
-  letter-spacing: 1px;
-  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.8); }
-
-.menuitem:hover {
   cursor: pointer;
-  background-color: rgba(0, 0, 0, 0.5); }
+  position: fixed;
+  padding: 8px; }
+  .controls_toggle:hover, .menu_toggle:hover {
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#444444), to(#212121));
+    background-image: -moz-linear-gradient(center bottom, #212121 0%, #444444 100%);
+    -pie-background: linear-gradient(#444444, #212121);
+    background-color: #212121;
+    color: #eeeeee; }
+  .controls_toggle:hover, .menu_toggle:hover {
+    border-top-color: #555555;
+    border-bottom-color: black; }
+
+.controls_toggle, .menu_toggle, .steps_wrapper, .time_wrapper, .message {
+  border-top: 2px solid white;
+  border-bottom: 1px solid #cccccc; }
+
+.controls_toggle, .menu_toggle, .menu_wrapper, #shower-and-changer, .steps_wrapper, .time_wrapper, .message {
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fdfdfd), to(#eeeeee));
+  background-image: -moz-linear-gradient(center bottom, #eeeeee 0%, #fdfdfd 100%);
+  -pie-background: linear-gradient(#fdfdfd, #eeeeee);
+  -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.4);
+  -moz-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.4);
+  background-color: #fdfdfd;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  color: #555555;
+  font-size: 14px;
+  font-weight: bold; }
+
+.message {
+  padding: 10px;
+  display: none;
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  width: 400px;
+  height: 180px;
+  z-index: 20;
+  -webkit-box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2); }
+  .message .content {
+    background-color: white;
+    width: 100%;
+    height: 100%;
+    border: 1px dashed #cccccc; }
+
+.steps_wrapper {
+  position: relative;
+  top: 10px;
+  font-size: 20px;
+  color: #666666;
+  width: 140px;
+  text-align: center; }
+
+.time_wrapper {
+  position: fixed;
+  font-size: 20px;
+  line-height: 30px;
+  color: #666666;
+  text-align: center;
+  width: 260px;
+  padding: 5px; }
+  .time_wrapper #time, .time_wrapper #steps {
+    height: 30px;
+    width: 120px; }
+  .time_wrapper #time {
+    text-align: right;
+    float: left; }
+  .time_wrapper #steps {
+    text-align: left;
+    float: right; }
+
+.menu_toggle {
+  top: 10px;
+  left: 10px;
+  width: 130px; }
+
+.menu_wrapper {
+  position: fixed;
+  width: 145px;
+  top: 50px;
+  left: 10px;
+  overflow: hidden; }
+
+.box2 ul {
+  padding: 8px; }
+  .box2 ul li {
+    cursor: pointer;
+    padding: 3px;
+    margin-bottom: 2px;
+    color: #555555;
+    font-size: 14px;
+    font-weight: bold; }
+    .box2 ul li:hover {
+      padding-left: 10px;
+      color: black; }
+
+.wrapper {
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  overflow: hidden;
+  -webkit-border-radius: 5px;
+  -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.4);
+  -moz-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.4); }
 
 #shower-and-changer {
-  display: none;
-  position: fixed;
-  top: 10px;
-  right: 10px;
+  overflow: hidden;
   padding: 10px; }
   #shower-and-changer h1, #shower-and-changer h2 {
     font-size: 18px;

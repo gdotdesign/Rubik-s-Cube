@@ -51,8 +51,8 @@ Fx.Three = new Class {
     theta = Math.atan2(@object.position[@options.axis2],@object.position[@options.axis1])
     theta
   complete: ->
-    @parent()
     @object.facePoint(@fromss)
+    @parent()
     Transitioning = false
   computeOnce: (to) ->
     @fromss = to
@@ -248,7 +248,7 @@ Rubik.Cube = new Class {
 
 ShuffleID = null
 Rubik.Scene = new Class {
-  Impelments: Events
+  Implements: Events
   loadTexture: (url) ->
     material = new THREE.MeshBitmapMaterial( @texture_placeholder );
     texture = new Image();
@@ -417,7 +417,7 @@ Rubik.Scene = new Class {
     @camera.position.y = @radious * Math.sin( @phi * Math.PI / 360 )
     @camera.position.z = @radious * Math.cos( @theta * Math.PI / 360 ) * Math.cos( @phi * Math.PI / 360 )
     
-    @camera.target.position.y = -200
+    #@camera.target.position.y = -200
     
     @scene = new THREE.Scene()
     
@@ -429,7 +429,7 @@ Rubik.Scene = new Class {
     @renderer.setSize @width, @height
    
     @ground = new THREE.Mesh( new Plane( 2500, 2500, 10, 10), [@loadTexture( 'textures/backdrop3.png' )] )
-    @scene.addObject @ground
+    #@scene.addObject @ground
     @ground.rotation.x = -90*(Math.PI/180)
     @ground.position.y = -900
     @ground.doublesided = true
@@ -564,8 +564,11 @@ Solving = false
 resetTransition = ->
   Transitioning = false
   @removeEvent 'complete', resetTransition
+  console.log Rk.checkSolve()
+  Scene.fireEvent 'check'
   #check complete
 Rubik.Rubik = new Class {
+  Implements: Events
   initialize: (scene) ->
     @scene = scene
     @cubes = []
@@ -576,7 +579,6 @@ Rubik.Rubik = new Class {
     @hid = setInterval(@historyStepBack.bind(@) ,TweenDuration*2)
     Solving = true
   historyStepBack: ->
-    console.log @history.length
     if @history.length > 0
       laststep = @history.pop()
       switch laststep.type
@@ -635,6 +637,7 @@ Rubik.Rubik = new Class {
       if Math.round(cube.base.position.x) is level
         tween = cube.rotX x
     @history.push {type:'rotateColumn',value:-x,level:level}
+    
   rotateLevel: (x,level) ->
     if not Transitioning
       Transitioning = true
@@ -644,6 +647,8 @@ Rubik.Rubik = new Class {
       tween.addEvent 'complete', resetTransition
       if not Solving
         @history.push {type:'rotateLevel',value:-x,level:level}
+      @fireEvent 'step', new Rubik.Step('rotateLevel',-x, level)
+        
   rotateColumn: (x,level) ->
     if not Transitioning
       Transitioning = true
@@ -653,6 +658,7 @@ Rubik.Rubik = new Class {
       tween.addEvent 'complete', resetTransition
       if not Solving
         @history.push {type:'rotateColumn',value:-x,level:level}
+      @fireEvent 'step', new Rubik.Step('rotateColumn',-x, level)
   rotateRow: (x,level) ->
     if not Transitioning
       Transitioning = true
@@ -662,6 +668,7 @@ Rubik.Rubik = new Class {
       tween.addEvent 'complete', resetTransition
       if not Solving
         @history.push {type:'rotateRow',value:-x,level:level}
+      @fireEvent 'step', new Rubik.Step('rotateRow',-x, level)
   
   removeCubes: ->
     for cube in @cubes
@@ -689,35 +696,29 @@ Rubik.Rubik = new Class {
       
     tmpmat = z330[0].base.geometry.faces[1].material[0]
     for cube in z330
-      console.log cube.base.geometry.faces[1].material[0] is tmpmat
       if cube.base.geometry.faces[1].material[0] isnt tmpmat
           return false
           
     tmpmat = zm330[0].base.geometry.faces[0].material[0]
     for cube in zm330
-      console.log cube.base.geometry.faces[0].material[0] is tmpmat
       if cube.base.geometry.faces[0].material[0] isnt tmpmat
           return false
           
     tmpmat = y330[0].base.geometry.faces[5].material[0]
     for cube in y330
-      console.log cube.base.geometry.faces[5].material[0] is tmpmat
       if cube.base.geometry.faces[5].material[0] isnt tmpmat
           return false
           
     tmpmat = ym330[0].base.geometry.faces[3].material[0]
     for cube in ym330
-      console.log cube.base.geometry.faces[3].material[0] is tmpmat
       if cube.base.geometry.faces[3].material[0] isnt tmpmat
           return false
     tmpmat = x330[0].base.geometry.faces[2].material[0]
     for cube in x330
-      console.log cube.base.geometry.faces[2].material[0] is tmpmat
       if cube.base.geometry.faces[2].material[0] isnt tmpmat
           return false
     tmpmat = xm330[0].base.geometry.faces[4].material[0]
     for cube in xm330
-      console.log cube.base.geometry.faces[4].material[0] is tmpmat
       if cube.base.geometry.faces[4].material[0] isnt tmpmat
           return false
     true
@@ -755,40 +756,62 @@ Rubik.Rubik = new Class {
 }
 
 
+Rubik.History = new Class {
+  initialize: ->
+    @
+   
+}
+
+
+Rubik.Step = new Class {
+  initialize: (type, value, level) ->
+    @type = type
+    @value = value
+    @level = level
+}
+
+
+Game = null
 MainMenu = new Class {
   initialize: () ->
-    @Float = new Core.Float()
-    @Float.base.addClass 'mainmenu'
-    @buildMenu()
-    $("shower-and-changer").grab new Element('h2',{text:'Shortcuts'}), 'top'
-    @Float.base.addEvent 'click:relay(div)', @mmhandler.bind @
+    $("menu").addEvent 'click:relay(li)', @mmhandler.bindWithEvent(@)
+    @el = new Element 'div', {class:'wrapper'}
+    @el.set 'tween', {duration: "250ms"}
+    $$('.menu_wrapper').set 'tween', {duration: "250ms"}
+    $$('.time_wrapper, .steps_wrapper').position()
+    $$('.time_wrapper').setStyle 'top',10
+    $$('.steps_wrapper').setStyle 'top',65
+    @controlsHeight = 0
+    @menuHeight = 0
+    if $("shower-and-changer")?
+      @el.wraps $("shower-and-changer")
+      $$(".controls_toggle")[0].addEvent 'click',( ->
+        if @controlsHeight == 0
+          @controlsHeight = @el.getSize().y
+        if @el.getSize().y == 0
+          @el.tween 'height', @controlsHeight
+        else
+          @el.tween 'height', 0 
+      ).bind @
+    $$(".menu_toggle")[0].addEvent 'click',( ->
+      if @menuHeight == 0
+        @menuHeight = $$('.menu_wrapper')[0].getSize().y
+      if $$('.menu_wrapper')[0].getSize().y == 0
+        $$('.menu_wrapper')[0].tween 'height', @menuHeight
+      else
+       $$('.menu_wrapper')[0].tween 'height', 0 
+    ).bind @
     @
   mmhandler: (e) ->
-    switch e.target.get('text')
-      when MenuItems[4]
-        mm.Float.toggle()
-        if not Scene.stepint?
-          Scene.stepint = setInterval Scene.step.bind(Scene), 1000/60 
-        else
-          clearInterval Scene.stepint
-          Scene.stepint = null
-      when MenuItems[1]
-        if $("shower-and-changer").getStyle('display') is 'none'
-          $("shower-and-changer").setStyle 'display', 'block'
-        else
-          $("shower-and-changer").setStyle 'display', 'none'
+    console.log e.target.get('rel')
+    switch e.target.get('rel')
+      when 'new'
+        if Game?
+          Game.stop()
+        Game = new Rubik.Game()
+        Game.start()
         
-  buildMenu: () ->  
-    for item in MenuItems
-      @Float.base.grab new Element 'div', {class:'menuitem',text:item}
 }
-MenuItems = [
-  'High Scores'
-  'Shortcuts'
-  'Help'
-  'About'
-  'Close'
-]
 
 
 Rubik.Game = new Class {
@@ -798,19 +821,36 @@ Rubik.Game = new Class {
   }
   initialize: (options) ->
     @setOptions options
+    @steps = 0
     @shuffled = false
     @time = 0
+    Scene.addEvent 'check',( ->
+      if Rk.checkSolve()
+        @stop()
+    ).bindWithEvent @
+    @
   create: ->
   shuffle: ->
-    for i in [0..100]
+    for i in [0..18]
       Scene.shuffle()
   start: ->
+    @history = new Rubik.History()
+    Rk.addEvent 'step', ( ->
+      @steps++
+      $('steps').set 'text',"Steps: "+@steps
+    ).bindWithEvent @
     @id = setInterval @timer.bind(@), @options.speed
+    @shuffle()
   timer: ->
     @time += 1
-    @elapsed = Math.floor(@time/60/60) + ":" + Math.floor(@time/60) + ":" + @time%60
+    @elapsed = "Time: "+Math.floor(@time/60/60) + ":" + Math.floor(@time/60) + ":" + @time%60
+    $('time').set 'text', @elapsed
     console.log @elapsed
   stop: ->
+    console.log 'stopping'
+    console.log 'game ended'
+    console.log 'Time:'+ @elapsed
+    console.log 'Steps:'+ @steps
     clearInterval @id
     @id = null
   pause: ->  

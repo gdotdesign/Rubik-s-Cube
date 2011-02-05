@@ -1,6 +1,6 @@
 ShuffleID = null
 Rubik.Scene = new Class {
-  Impelments: Events
+  Implements: Events
   loadTexture: (url) ->
     material = new THREE.MeshBitmapMaterial( @texture_placeholder );
     texture = new Image();
@@ -169,7 +169,7 @@ Rubik.Scene = new Class {
     @camera.position.y = @radious * Math.sin( @phi * Math.PI / 360 )
     @camera.position.z = @radious * Math.cos( @theta * Math.PI / 360 ) * Math.cos( @phi * Math.PI / 360 )
     
-    @camera.target.position.y = -200
+    #@camera.target.position.y = -200
     
     @scene = new THREE.Scene()
     
@@ -181,7 +181,7 @@ Rubik.Scene = new Class {
     @renderer.setSize @width, @height
    
     @ground = new THREE.Mesh( new Plane( 2500, 2500, 10, 10), [@loadTexture( 'textures/backdrop3.png' )] )
-    @scene.addObject @ground
+    #@scene.addObject @ground
     @ground.rotation.x = -90*(Math.PI/180)
     @ground.position.y = -900
     @ground.doublesided = true

@@ -3,8 +3,11 @@ Solving = false
 resetTransition = ->
   Transitioning = false
   @removeEvent 'complete', resetTransition
+  console.log Rk.checkSolve()
+  Scene.fireEvent 'check'
   #check complete
 Rubik.Rubik = new Class {
+  Implements: Events
   initialize: (scene) ->
     @scene = scene
     @cubes = []
@@ -15,7 +18,6 @@ Rubik.Rubik = new Class {
     @hid = setInterval(@historyStepBack.bind(@) ,TweenDuration*2)
     Solving = true
   historyStepBack: ->
-    console.log @history.length
     if @history.length > 0
       laststep = @history.pop()
       switch laststep.type
@@ -74,6 +76,7 @@ Rubik.Rubik = new Class {
       if Math.round(cube.base.position.x) is level
         tween = cube.rotX x
     @history.push {type:'rotateColumn',value:-x,level:level}
+    
   rotateLevel: (x,level) ->
     if not Transitioning
       Transitioning = true
@@ -83,6 +86,8 @@ Rubik.Rubik = new Class {
       tween.addEvent 'complete', resetTransition
       if not Solving
         @history.push {type:'rotateLevel',value:-x,level:level}
+      @fireEvent 'step', new Rubik.Step('rotateLevel',-x, level)
+        
   rotateColumn: (x,level) ->
     if not Transitioning
       Transitioning = true
@@ -92,6 +97,7 @@ Rubik.Rubik = new Class {
       tween.addEvent 'complete', resetTransition
       if not Solving
         @history.push {type:'rotateColumn',value:-x,level:level}
+      @fireEvent 'step', new Rubik.Step('rotateColumn',-x, level)
   rotateRow: (x,level) ->
     if not Transitioning
       Transitioning = true
@@ -101,6 +107,7 @@ Rubik.Rubik = new Class {
       tween.addEvent 'complete', resetTransition
       if not Solving
         @history.push {type:'rotateRow',value:-x,level:level}
+      @fireEvent 'step', new Rubik.Step('rotateRow',-x, level)
   
   removeCubes: ->
     for cube in @cubes
@@ -128,35 +135,29 @@ Rubik.Rubik = new Class {
       
     tmpmat = z330[0].base.geometry.faces[1].material[0]
     for cube in z330
-      console.log cube.base.geometry.faces[1].material[0] is tmpmat
       if cube.base.geometry.faces[1].material[0] isnt tmpmat
           return false
           
     tmpmat = zm330[0].base.geometry.faces[0].material[0]
     for cube in zm330
-      console.log cube.base.geometry.faces[0].material[0] is tmpmat
       if cube.base.geometry.faces[0].material[0] isnt tmpmat
           return false
           
     tmpmat = y330[0].base.geometry.faces[5].material[0]
     for cube in y330
-      console.log cube.base.geometry.faces[5].material[0] is tmpmat
       if cube.base.geometry.faces[5].material[0] isnt tmpmat
           return false
           
     tmpmat = ym330[0].base.geometry.faces[3].material[0]
     for cube in ym330
-      console.log cube.base.geometry.faces[3].material[0] is tmpmat
       if cube.base.geometry.faces[3].material[0] isnt tmpmat
           return false
     tmpmat = x330[0].base.geometry.faces[2].material[0]
     for cube in x330
-      console.log cube.base.geometry.faces[2].material[0] is tmpmat
       if cube.base.geometry.faces[2].material[0] isnt tmpmat
           return false
     tmpmat = xm330[0].base.geometry.faces[4].material[0]
     for cube in xm330
-      console.log cube.base.geometry.faces[4].material[0] is tmpmat
       if cube.base.geometry.faces[4].material[0] isnt tmpmat
           return false
     true
