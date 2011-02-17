@@ -1,8 +1,8 @@
 var CUBE_MATERIALS, CUBE_SIZE, Game, MATERIAL, MATERIAL_BLACK, MainMenu, Rubik, STROKE_MATERIAL, STROKE_MATERIAL2, ShuffleID, Solving, Transitioning, TweenDuration, resetTransition;
 MATERIAL = new THREE.MeshFaceMaterial();
-STROKE_MATERIAL = new THREE.MeshColorStrokeMaterial(0x000000, 0.2, 2);
-STROKE_MATERIAL2 = new THREE.MeshColorStrokeMaterial(0x000000, 0.9, 5);
-MATERIAL_BLACK = new THREE.MeshColorFillMaterial(0x000000, 0.8);
+STROKE_MATERIAL = null;
+STROKE_MATERIAL2 = new THREE.MeshColorStrokeMaterial(0x000000, 1, 5);
+MATERIAL_BLACK = null;
 CUBE_SIZE = 300;
 CUBE_MATERIALS = [];
 CUBE_MATERIALS['white'] = new THREE.MeshColorFillMaterial(0xffffff, 1);
@@ -501,7 +501,7 @@ Rubik.Scene = new Class({
     document.addEvent('mouseup', this.MouseUp.bind(this));
     document.addEventListener('touchstart', this.touchstart.bind(this));
     document.addEventListener('touchmove', this.touchmove.bind(this));
-    this.stepint = setInterval(this.step.bind(this), 100);
+    this.stepint = setInterval(this.step.bind(this), 1000 / 60);
     return this;
   },
   shuffle: function() {

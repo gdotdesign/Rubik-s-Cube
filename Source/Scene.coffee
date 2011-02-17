@@ -219,7 +219,7 @@ Rubik.Scene = new Class {
     #document.addEvent 'touchend', @touchend.bind @
     document.addEventListener 'touchmove', @touchmove.bind @
     
-    @stepint = setInterval  @step.bind(@), 100
+    @stepint = setInterval  @step.bind(@), 1000/60
 
     @
   shuffle: ->
