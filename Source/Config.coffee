@@ -10,5 +10,5 @@ CUBE_MATERIALS['orange'] = new THREE.MeshColorFillMaterial( 0xFF6A00, 1 )
 CUBE_MATERIALS['yellow'] = new THREE.MeshColorFillMaterial( 0xffff00, 1 )
 CUBE_MATERIALS['blue'] = new THREE.MeshColorFillMaterial( 0x0000ff, 1 )
 CUBE_MATERIALS['green'] = new THREE.MeshColorFillMaterial( 0x00ff00, 1 )
-TweenDuration = 250
+TweenDuration = 1250
 Rubik = {}

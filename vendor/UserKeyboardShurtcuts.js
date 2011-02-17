@@ -121,11 +121,11 @@ var UserKeyboardShortcuts = Class.refactor(Keyboard, {
 			tabindex: 0
 		});
 		var desc = new Element('span', {
-			class: this.options.prefixClass + '-description',
+			'class': this.options.prefixClass + '-description',
 			text: shortcut.description
 		});
 		var keys = new Element('span', {
-			class: this.options.prefixClass + '-keys',
+			'class': this.options.prefixClass + '-keys',
 			text: shortcut.keys
 		}).store('shortcutName', shortcut.name);
 		item.grab(keys);

@@ -10,7 +10,7 @@ CUBE_MATERIALS['orange'] = new THREE.MeshColorFillMaterial( 0xFF6A00, 1 )
 CUBE_MATERIALS['yellow'] = new THREE.MeshColorFillMaterial( 0xffff00, 1 )
 CUBE_MATERIALS['blue'] = new THREE.MeshColorFillMaterial( 0x0000ff, 1 )
 CUBE_MATERIALS['green'] = new THREE.MeshColorFillMaterial( 0x00ff00, 1 )
-TweenDuration = 250
+TweenDuration = 1250
 Rubik = {}
 
 
@@ -270,6 +270,7 @@ Rubik.Scene = new Class {
     @mouseX = 0
     @mouseY = 0
     
+    ###
     @keyboard = new UserKeyboardShortcuts({active:true});
     @keyboard.addShortcuts {
       plusduration: {
@@ -407,6 +408,7 @@ Rubik.Scene = new Class {
       
     }
     @keyboard.showAndChange()
+    ###
     
     @texture_placeholder = document.createElement( 'canvas' )
     @texture_placeholder.width = 128
@@ -459,7 +461,14 @@ Rubik.Scene = new Class {
     document.addEvent 'mousewheel', @MouseWheel.bind @
     document.addEvent 'mousedown', @MouseDown.bind @
     document.addEvent 'mouseup', @MouseUp.bind @
-    @stepint = setInterval  @step.bind(@), 1000/60 
+    
+    #touch events
+    document.addEventListener 'touchstart', @touchstart.bind @
+    #document.addEvent 'touchend', @touchend.bind @
+    document.addEventListener 'touchmove', @touchmove.bind @
+    
+    @stepint = setInterval  @step.bind(@), 100
+
     @
   shuffle: ->
     level = Math.round(Math.random()*5)
@@ -507,6 +516,25 @@ Rubik.Scene = new Class {
         Rk.rotateColumn(-90,a)
       when 5 
         Rk.rotateRow(-90,a)
+  touchstart: (e) ->
+    @randomRotation()
+    e.preventDefault()
+    event.client = {x:event.changedTouches[0].clientX,y:event.changedTouches[0].clientY}
+    @mouseisdown = true
+    @onMouseDownTheta = @theta
+    @onMouseDownPhi = @phi
+    @onMouseDownPosition.x = e.client.x
+    @onMouseDownPosition.y = e.client.y
+    console.log e
+  touchmove: ( event ) ->
+    event.preventDefault()
+    event.client = {x:event.changedTouches[0].clientX,y:event.changedTouches[0].clientY}
+    if @mouseisdown
+      @theta = - ( ( event.client.x - @onMouseDownPosition.x ) * 0.5 ) + @onMouseDownTheta
+      @phi = ( ( event.client.y - @onMouseDownPosition.y ) * 0.5 ) + @onMouseDownPhi
+      @positionCamera event
+    @mouse2D.x = ( event.client.x / @width ) * 2 - 1
+    @mouse2D.y = - ( event.client.y / @height ) * 2 + 1
   MouseDown: (e) ->    
     @mouseisdown = true
     @onMouseDownTheta = @theta

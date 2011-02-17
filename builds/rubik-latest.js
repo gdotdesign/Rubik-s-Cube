@@ -11,7 +11,7 @@ CUBE_MATERIALS['orange'] = new THREE.MeshColorFillMaterial(0xFF6A00, 1);
 CUBE_MATERIALS['yellow'] = new THREE.MeshColorFillMaterial(0xffff00, 1);
 CUBE_MATERIALS['blue'] = new THREE.MeshColorFillMaterial(0x0000ff, 1);
 CUBE_MATERIALS['green'] = new THREE.MeshColorFillMaterial(0x00ff00, 1);
-TweenDuration = 250;
+TweenDuration = 1250;
 Rubik = {};
 Fx.Three = new Class({
   Extends: Fx,
@@ -322,151 +322,144 @@ Rubik.Scene = new Class({
     this.onMouseDownPosition = {};
     this.mouseX = 0;
     this.mouseY = 0;
-    this.keyboard = new UserKeyboardShortcuts({
-      active: true
-    });
-    this.keyboard.addShortcuts({
+    /*@keyboard = new UserKeyboardShortcuts({active:true});
+    @keyboard.addShortcuts {
       plusduration: {
-        keys: '+',
-        description: 'Increment rotation duration',
-        handler: function(e) {
-          e.stop();
-          return TweenDuration += 10;
-        }
-      },
-      minusduration: {
-        keys: '-',
-        description: 'decrement rotation duration',
-        handler: function(e) {
-          e.stop();
-          return TweenDuration -= 10;
-        }
-      },
-      rotatey: {
-        keys: 'shift+q',
-        description: 'Rotate Y',
-        handler: function(e) {
-          e.stop();
-          return Rk.rotateY(90);
-        }
-      },
-      rotatex: {
-        keys: 'shift+w',
-        description: 'Rotate X',
-        handler: function(e) {
-          e.stop();
-          return Rk.rotateX(90);
-        }
-      },
-      rotatez: {
-        keys: 'shift+e',
-        description: 'Rotate z',
-        handler: function(e) {
-          e.stop();
-          return Rk.rotateZ(90);
-        }
-      },
-      reset: {
-        keys: 'r',
-        description: 'Reset Cube',
-        handler: function(e) {
-          e.stop();
-          Rk.removeCubes();
-          return Rk.buildCube();
-        }
-      },
-      rotatelevel: {
-        keys: 'q',
-        description: 'Rotate Level',
-        handler: (function(e) {
-          var _a;
-          e.stop();
-          return (typeof (_a = this.rollOveredCube) !== "undefined" && _a !== null) ? Rk.rotateLevel(90, Math.round(this.rollOveredCube.position.y)) : null;
-        }).bind(this)
-      },
-      rotaterow: {
-        keys: 'e',
-        description: 'Rotate Row',
-        handler: (function(e) {
-          var _a;
-          e.stop();
-          return (typeof (_a = this.rollOveredCube) !== "undefined" && _a !== null) ? Rk.rotateRow(90, Math.round(this.rollOveredCube.position.z)) : null;
-        }).bind(this)
-      },
-      rotatecolumn: {
-        keys: 'w',
-        description: 'Rotate Column',
-        handler: (function(e) {
-          var _a;
-          e.stop();
-          return (typeof (_a = this.rollOveredCube) !== "undefined" && _a !== null) ? Rk.rotateColumn(90, Math.round(this.rollOveredCube.position.x)) : null;
-        }).bind(this)
-      },
-      rotatelevelb: {
-        keys: 'a',
-        description: 'Rotate Level (-)',
-        handler: (function(e) {
-          var _a;
-          e.stop();
-          return (typeof (_a = this.rollOveredCube) !== "undefined" && _a !== null) ? Rk.rotateLevel(-90, Math.round(this.rollOveredCube.position.y)) : null;
-        }).bind(this)
-      },
-      rotaterowb: {
-        keys: 'd',
-        description: 'Rotate Row (-)',
-        handler: (function(e) {
-          var _a;
-          e.stop();
-          return (typeof (_a = this.rollOveredCube) !== "undefined" && _a !== null) ? Rk.rotateRow(-90, Math.round(this.rollOveredCube.position.z)) : null;
-        }).bind(this)
-      },
-      rotatecolumnb: {
-        keys: 's',
-        description: 'Rotate Column (-)',
-        handler: (function(e) {
-          var _a;
-          e.stop();
-          return (typeof (_a = this.rollOveredCube) !== "undefined" && _a !== null) ? Rk.rotateColumn(-90, Math.round(this.rollOveredCube.position.x)) : null;
-        }).bind(this)
-      },
-      menu: {
-        keys: 'esc',
-        description: 'Toggle Menu',
-        handler: function(e) {
-          var _a;
-          e.stop();
-          mm.Float.toggle();
-          if (!(typeof (_a = Scene.stepint) !== "undefined" && _a !== null)) {
-            return (Scene.stepint = setInterval(Scene.step.bind(Scene), 1000 / 60));
-          } else {
-            clearInterval(Scene.stepint);
-            return (Scene.stepint = null);
-          }
-        }
-      },
-      shuffle: {
-        keys: 'x',
-        description: 'Shuffle on / off',
-        handler: function(e) {
-          e.stop();
-          if (typeof ShuffleID !== "undefined" && ShuffleID !== null) {
-            clearInterval(ShuffleID);
-            return (ShuffleID = null);
-          } else {
-            return (ShuffleID = setInterval(Scene.randomRotation, TweenDuration * 2));
-          }
-        }
-      },
-      ground: {
-        keys: 'g',
-        description: 'Ground on / off',
-        handler: function(e) {
-          e.stop();
-          return Scene.scene.objects.indexOf(Scene.ground) >= 0 ? Scene.scene.removeObject(Scene.ground) : Scene.scene.addObject(Scene.ground);
-        }
+        keys:'+'
+        description: 'Increment rotation duration'
+        handler: (e)->
+          e.stop()
+          TweenDuration += 10
       }
-    });
-    this.keyboard.showAndChange();
+      minusduration: {
+        keys:'-'
+        description: 'decrement rotation duration'
+        handler: (e)->
+          e.stop()
+          TweenDuration -= 10
+      }
+      rotatey: {
+        keys:'shift+q'
+        description: 'Rotate Y'
+        handler: (e)->
+          e.stop()
+          Rk.rotateY(90)
+      }
+      rotatex: {
+        keys:'shift+w'
+        description: 'Rotate X'
+        handler: (e) ->
+          e.stop()
+          Rk.rotateX(90)
+      }
+      rotatez: {
+        keys:'shift+e'
+        description: 'Rotate z'
+        handler: (e) ->
+          e.stop()
+          Rk.rotateZ(90)
+      }
+      reset: {
+        keys:'r'
+        description: 'Reset Cube'
+        handler: (e) ->
+          e.stop()
+          Rk.removeCubes()
+          Rk.buildCube()
+      }
+      rotatelevel: {
+        keys:'q'
+        description: 'Rotate Level'
+        handler: ( (e)->
+          e.stop()
+          if @rollOveredCube?
+            Rk.rotateLevel(90,Math.round(@rollOveredCube.position.y))
+        ).bind @
+      }
+      rotaterow: {
+        keys:'e'
+        description: 'Rotate Row'
+        handler: ( (e) ->
+          e.stop()
+          if @rollOveredCube?
+            Rk.rotateRow(90,Math.round(@rollOveredCube.position.z))
+        ).bind @
+      }
+      rotatecolumn: {
+        keys:'w'
+        description: 'Rotate Column'
+        handler: ( (e)->
+          e.stop()
+          if @rollOveredCube?
+            Rk.rotateColumn(90,Math.round(@rollOveredCube.position.x))
+        ).bind @
+      }
+
+      rotatelevelb: {
+        keys:'a'
+        description: 'Rotate Level (-)'
+        handler: ( (e)->
+          e.stop()
+          if @rollOveredCube?
+            Rk.rotateLevel(-90,Math.round(@rollOveredCube.position.y))
+        ).bind @
+      }
+      rotaterowb: {
+        keys:'d'
+        description: 'Rotate Row (-)'
+        handler: ( (e) ->
+          e.stop()
+          if @rollOveredCube?
+            Rk.rotateRow(-90,Math.round(@rollOveredCube.position.z))
+        ).bind @
+      }
+      rotatecolumnb: {
+        keys:'s'
+        description: 'Rotate Column (-)'
+        handler: ( (e)->
+          e.stop()
+          if @rollOveredCube?
+            Rk.rotateColumn(-90,Math.round(@rollOveredCube.position.x))
+        ).bind @
+      }
+      menu: {
+        keys:'esc'
+        description: 'Toggle Menu'
+        handler: (e) ->
+          e.stop()
+          mm.Float.toggle()
+          if not Scene.stepint?
+            Scene.stepint = setInterval Scene.step.bind(Scene), 1000/60
+          else
+            clearInterval Scene.stepint
+            Scene.stepint = null
+      }
+      shuffle: {
+        keys:'x'
+        description: 'Shuffle on / off'
+        handler: (e) ->
+          e.stop()
+          if ShuffleID?
+            clearInterval(ShuffleID)
+            ShuffleID = null
+          else
+            ShuffleID = setInterval(Scene.randomRotation,TweenDuration*2)
+      }
+      ground: {
+        keys:'g'
+        description: 'Ground on / off'
+        handler: (e) ->
+          e.stop()
+          if Scene.scene.objects.indexOf( Scene.ground ) >= 0
+            Scene.scene.removeObject Scene.ground
+          else
+            Scene.scene.addObject Scene.ground
+
+      }
+
+    }
+    @keyboard.showAndChange()
+    */
     this.texture_placeholder = document.createElement('canvas');
     this.texture_placeholder.width = 128;
     this.texture_placeholder.height = 128;
@@ -506,7 +499,9 @@ Rubik.Scene = new Class({
     document.addEvent('mousewheel', this.MouseWheel.bind(this));
     document.addEvent('mousedown', this.MouseDown.bind(this));
     document.addEvent('mouseup', this.MouseUp.bind(this));
-    this.stepint = setInterval(this.step.bind(this), 1000 / 60);
+    document.addEventListener('touchstart', this.touchstart.bind(this));
+    document.addEventListener('touchmove', this.touchmove.bind(this));
+    this.stepint = setInterval(this.step.bind(this), 100);
     return this;
   },
   shuffle: function() {
@@ -568,6 +563,34 @@ Rubik.Scene = new Class({
     case 5:
       return Rk.rotateRow(-90, a);
     }
+  },
+  touchstart: function(e) {
+    this.randomRotation();
+    e.preventDefault();
+    event.client = {
+      x: event.changedTouches[0].clientX,
+      y: event.changedTouches[0].clientY
+    };
+    this.mouseisdown = true;
+    this.onMouseDownTheta = this.theta;
+    this.onMouseDownPhi = this.phi;
+    this.onMouseDownPosition.x = e.client.x;
+    this.onMouseDownPosition.y = e.client.y;
+    return console.log(e);
+  },
+  touchmove: function(event) {
+    event.preventDefault();
+    event.client = {
+      x: event.changedTouches[0].clientX,
+      y: event.changedTouches[0].clientY
+    };
+    if (this.mouseisdown) {
+      this.theta = -((event.client.x - this.onMouseDownPosition.x) * 0.5) + this.onMouseDownTheta;
+      this.phi = ((event.client.y - this.onMouseDownPosition.y) * 0.5) + this.onMouseDownPhi;
+      this.positionCamera(event);
+    }
+    this.mouse2D.x = (event.client.x / this.width) * 2 - 1;
+    return (this.mouse2D.y = -(event.client.y / this.height) * 2 + 1);
   },
   MouseDown: function(e) {
     this.mouseisdown = true;
